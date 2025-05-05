@@ -47,9 +47,7 @@ function fetchMovie(id) {
       document.getElementById('movieTitle').textContent = data.title;
       document.getElementById('movieYear').textContent = new Date(data.release_date).getFullYear();
       document.getElementById('movieRating').textContent = data.vote_average.toFixed(1);
-      
-      const shortOverview = data.overview.length > 150 ? data.overview.substring(0, 150) + "..." : data.overview;
-      document.getElementById('movieOverview').textContent = shortOverview;
+      document.getElementById('movieOverview').textContent = data.overview; // Полный синопсис
       
       document.getElementById('moviePoster').src = `${IMAGE_BASE_URL}${data.poster_path}`;
       movieCard.style.display = 'flex';
