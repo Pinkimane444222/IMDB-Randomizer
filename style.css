@@ -12,7 +12,7 @@ body {
   overflow: hidden;
   background: linear-gradient(45deg, #ff6b6b, #1e90ff, #7fffd4, #ffa07a);
   background-size: 400% 400%;
-  animation: gradientAnimation 10s ease infinite;
+  animation: gradientAnimation 30s ease infinite; /* Увеличено до 30 секунд */
 }
 
 @keyframes gradientAnimation {
