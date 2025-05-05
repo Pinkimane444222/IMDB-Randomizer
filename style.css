@@ -1,53 +1,175 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
 
 body {
-  font-family: sans-serif;
-  padding: 0;
-  margin: 0;
-  background-color: #f9f9f9;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-height: 100vh;
+    background-color: var(--tg-theme-bg-color, #ffffff);
+    color: var(--tg-theme-text-color, #222222);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 16px;
 }
 
-h1 {
-  margin-top: 40px;
+.container {
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
 }
 
-button {
-  padding: 15px 25px;
-  font-size: 18px;
-  background-color: #4CAF50;
-  border: none;
-  color: white;
-  border-radius: 10px;
-  cursor: pointer;
-  margin-top: 20px;
+.welcome {
+    text-align: center;
+    margin-bottom: 20px;
 }
 
-#result {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  margin-top: 30px;
-  max-width: 600px;
-  width: 90%;
-  text-align: left;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.welcome h1 {
+    font-size: 1.5rem;
+    margin-bottom: 8px;
 }
 
-#poster {
-  border-radius: 10px;
-  max-width: 100%;
-  height: auto;
-  margin-bottom: 15px;
+.welcome p {
+    font-size: 1rem;
+    color: var(--tg-theme-hint-color, #999999);
 }
 
-#overview {
-  font-size: 16px;
-  line-height: 1.5;
-  color: #333;
+.movie-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    height: calc(100vh - 150px);
+    overflow: hidden;
+}
+
+.movie-card {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.movie-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.poster-container {
+    width: 100%;
+    height: 65%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+.poster {
+    height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.movie-info {
+    width: 100%;
+    height: 35%;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    overflow: hidden;
+}
+
+.movie-title {
+    font-size: 1.3rem;
+    font-weight: bold;
+    margin-bottom: 4px;
+    color: var(--tg-theme-text-color, #222222);
+}
+
+.movie-meta {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+    color: var(--tg-theme-hint-color, #999999);
+    font-size: 0.9rem;
+}
+
+.movie-rating {
+    display: flex;
+    align-items: center;
+    color: #F5C518;
+}
+
+.movie-rating svg {
+    margin-right: 4px;
+}
+
+.movie-overview {
+    font-size: 0.95rem;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 5;
+    -webkit-box-orient: vertical;
+    color: var(--tg-theme-text-color, #222222);
+    opacity: 0.9;
+}
+
+.button {
+    background-color: var(--tg-theme-button-color, #2AABEE);
+    color: var(--tg-theme-button-text-color, #ffffff);
+    border: none;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform 0.1s ease;
+    width: 100%;
+    max-width: 300px;
+}
+
+.button:active {
+    transform: scale(0.98);
+}
+
+.loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    border-top-color: var(--tg-theme-button-color, #2AABEE);
+    animation: spin 1s ease-in-out infinite;
+    margin-bottom: 16px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.error-message {
+    color: #e74c3c;
+    text-align: center;
+    margin: 16px 0;
 }
