@@ -1,4 +1,4 @@
-const API_KEY = '19739a5cb7feec7a597b8a968235dc9b';
+const API_KEY = '19739a5cb7feec7a597b8a968235dc9b'; 
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3/movie/';
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 
@@ -61,3 +61,11 @@ function fetchMovie(id) {
       errorMessage.style.display = 'block';
     });
 }
+
+function toggleTheme() {
+  document.body.classList.toggle('dark-theme');
+}
+
+document.body.insertAdjacentHTML('beforeend', `
+  <button class="theme-toggle" onclick="toggleTheme()">Сменить тему</button>
+`);
