@@ -10,7 +10,7 @@ body {
   height: 100vh;
   background: linear-gradient(45deg, #ffafcc, #c9c9ff, #ffcbaf, #f6d1b0);
   background-size: 400% 400%;
-  animation: gradientBackground 10s ease infinite;
+  animation: gradientBackground 30s ease infinite; /* Увеличена длительность анимации до 30 секунд */
 }
 
 @keyframes gradientBackground {
