@@ -7,10 +7,15 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
+  <header>
+    <div class="logo">
+      🎥
+    </div>
     <h1>Случайный фильм из топ-250 IMDb</h1>
+  </header>
+  <div class="container">
     <button id="rollButton">Let's roll!</button>
-    <div id="loading" class="loading">Загрузка...</div>
+    <div id="loading" class="loading" style="display: none;">Ищем ваш фильм...</div>
     <div id="errorMessage" class="error"></div>
     <div id="movieCard" class="card" style="display: none;">
       <img id="moviePoster" alt="Постер фильма" />
