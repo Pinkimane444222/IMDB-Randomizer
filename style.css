@@ -1,83 +1,102 @@
 body {
   font-family: Arial, sans-serif;
-  background: linear-gradient(-45deg, #141E30, #243B55, #141E30);
-  background-size: 400% 400%;
+  background: #111;
   color: #f0f0f0;
   margin: 0;
   padding: 20px;
   text-align: center;
-  animation: gradientBG 15s ease infinite;
-}
-
-@keyframes gradientBG {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-header {
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  margin-bottom: 30px;
-}
-
-header .logo {
-  font-size: 50px;
-  margin-bottom: 10px;
+  height: 100vh;
+  box-sizing: border-box;
 }
 
 .container {
-  max-width: 800px;
-  margin: 0 auto;
+  max-width: 600px; /* Ограничим максимальную ширину */
+  width: 100%; /* Чтобы контейнер заполнил экран */
+  text-align: center;
 }
 
 button {
-  padding: 10px 20px;
-  font-size: 18px;
-  background: linear-gradient(90deg, #ff416c, #ff4b2b);
+  padding: 8px 15px;
+  font-size: 16px; /* Уменьшил размер шрифта */
+  background: #e50914;
   color: white;
   border: none;
   cursor: pointer;
   border-radius: 6px;
-  margin: 20px 0;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  margin: 10px 0;
 }
 
 button:hover {
-  transform: scale(1.1);
-  box-shadow: 0 5px 15px rgba(255, 75, 43, 0.4);
-}
-
-.loading {
-  margin: 20px;
-  font-size: 18px;
-  color: #ff416c;
+  background: #b00610;
 }
 
 .error {
   color: red;
-  margin: 20px;
+  margin-top: 20px;
 }
 
 .card {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: rgba(34, 34, 34, 0.9);
+  background: #222;
   border-radius: 10px;
-  padding: 20px;
-  margin-top: 20px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  padding: 15px;
+  margin-top: 15px;
 }
 
 .card img {
-  width: 300px;
+  width: 200px; /* Уменьшил размер изображения */
   border-radius: 10px;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 }
 
 .card .info {
   text-align: left;
-  max-width: 700px;
+  max-width: 100%;
+}
+
+.card h2 {
+  font-size: 20px; /* Уменьшил размер заголовка */
+  margin-bottom: 10px;
+}
+
+.card p {
+  font-size: 14px; /* Уменьшил размер шрифта для текста */
+}
+
+h1 {
+  font-size: 24px; /* Уменьшил размер заголовка */
+  margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  /* Для мобильных устройств */
+  .container {
+    padding: 10px;
+  }
+
+  button {
+    font-size: 14px;
+    padding: 6px 12px;
+  }
+
+  .card img {
+    width: 150px; /* Уменьшаем постер на мобильных устройствах */
+  }
+
+  .card h2 {
+    font-size: 18px;
+  }
+
+  .card p {
+    font-size: 12px;
+  }
+
+  h1 {
+    font-size: 22px;
+  }
 }
