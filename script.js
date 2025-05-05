@@ -35,28 +35,29 @@ document.getElementById('rollButton').addEventListener('click', () => {
 });
 
 function fetchMovie(id) {
-  const loading = document.getElementById('loading');
   const errorMessage = document.getElementById('errorMessage');
   const movieCard = document.getElementById('movieCard');
 
   movieCard.style.display = 'none';
   errorMessage.style.display = 'none';
-  loading.style.display = 'flex';
 
   fetch(`${TMDB_BASE_URL}${id}?api_key=${API_KEY}&language=ru`)
     .then(res => res.json())
     .then(data => {
-      document.getElementById('movieTitle').textContent = data.title;
-      document.getElementById('movieYear').textContent = new Date(data.release_date).getFullYear();
-      document.getElementById('movieRating').textContent = data.vote_average.toFixed(1);
-      document.getElementById('movieOverview').textContent = data.overview;
-      document.getElementById('moviePoster').src = `${IMAGE_BASE_URL}${data.poster_path}`;
-      loading.style.display = 'none';
-      movieCard.style.display = 'flex';
+      if (data && data.title) {
+        document.getElementById('movieTitle').textContent = data.title;
+        document.getElementById('movieYear').textContent = new Date(data.release_date).getFullYear();
+        document.getElementById('movieRating').textContent = data.vote_average.toFixed(1);
+        document.getElementById('movieOverview').textContent = data.overview;
+        document.getElementById('moviePoster').src = `${IMAGE_BASE_URL}${data.poster_path}`;
+        movieCard.style.display = 'flex';
+      } else {
+        errorMessage.textContent = 'Ошибка при загрузке данных.';
+        errorMessage.style.display = 'block';
+      }
     })
     .catch(error => {
       console.error(error);
-      loading.style.display = 'none';
       errorMessage.textContent = 'Ошибка при загрузке данных.';
       errorMessage.style.display = 'block';
     });
