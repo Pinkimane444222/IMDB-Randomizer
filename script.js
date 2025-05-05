@@ -1,4 +1,4 @@
-const API_KEY = '19739a5cb7feec7a597b8a968235dc9b';
+const API_KEY = '19739a5cb7feec7a597b8a968235dc9b'; 
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3/movie/';
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 
@@ -37,8 +37,12 @@ document.getElementById('rollButton').addEventListener('click', () => {
 function fetchMovie(id) {
   const errorMessage = document.getElementById('errorMessage');
   const movieCard = document.getElementById('movieCard');
-  const carousel = document.getElementById('imageCarousel');
-  carousel.innerHTML = '';
+  const moviePoster = document.getElementById('moviePoster');
+  const movieTitle = document.getElementById('movieTitle');
+  const movieYear = document.getElementById('movieYear');
+  const movieRating = document.getElementById('movieRating');
+  const movieOverview = document.getElementById('movieOverview');
+  const movieLink = document.getElementById('movieLink');
 
   movieCard.style.display = 'none';
   errorMessage.style.display = 'none';
@@ -46,53 +50,17 @@ function fetchMovie(id) {
   fetch(`${TMDB_BASE_URL}${id}?api_key=${API_KEY}&language=ru`)
     .then(res => res.json())
     .then(data => {
-      document.getElementById('movieTitle').textContent = data.title;
-      document.getElementById('movieYear').textContent = new Date(data.release_date).getFullYear();
-      document.getElementById('movieRating').textContent = data.vote_average.toFixed(1);
-      document.getElementById('moviePoster').src = `${IMAGE_BASE_URL}${data.poster_path}`;
-
-      const overview = data.overview;
-      document.getElementById('movieOverview').innerHTML = overview.length > 300
-        ? `${overview.substring(0, 300)}... <a href="https://www.themoviedb.org/movie/${id}" target="_blank">Читать далее</a>`
-        : overview;
-
-      fetchImages(id); // Загружаем изображения для карусели
-
-      movieCard.style.display = 'flex';
+      movieTitle.textContent = data.title;
+      movieYear.textContent = new Date(data.release_date).getFullYear();
+      movieRating.textContent = data.vote_average.toFixed(1);
+      movieOverview.textContent = data.overview;
+      movieLink.href = `https://www.themoviedb.org/movie/${id}`;
+      moviePoster.src = `${IMAGE_BASE_URL}${data.poster_path}`;
+      movieCard.style.display = 'block'; // Показываем карточку с фильмом
     })
     .catch(error => {
-      console.error('Ошибка при загрузке фильма:', error);
-      errorMessage.textContent = 'Ошибка при загрузке данных: ' + error.message;
+      console.error(error);
+      errorMessage.textContent = 'Ошибка при загрузке данных.';
       errorMessage.style.display = 'block';
     });
-}
-
-function fetchImages(movieId) {
-  fetch(`${TMDB_BASE_URL}${movieId}/images?api_key=${API_KEY}`)
-    .then(res => res.json())
-    .then(data => {
-      const images = data.backdrops.slice(0, 5); // Берем до 5 кадров
-      const carousel = document.getElementById('imageCarousel');
-      images.forEach(img => {
-        const imgElement = document.createElement('img');
-        imgElement.src = `${IMAGE_BASE_URL}${img.file_path}`;
-        imgElement.className = 'swiper-slide';
-        carousel.appendChild(imgElement);
-      });
-      
-      // Инициализация Swiper
-      const swiper = new Swiper('.swiper-container', {
-        loop: true,
-        navigation: {
-          nextEl: '.swiper-button-next',
-          prevEl: '.swiper-button-prev'
-        },
-        autoplay: {
-          delay: 5000,
-        },
-        slidesPerView: 1,
-        spaceBetween: 10,
-      });
-    })
-    .catch(error => console.error('Ошибка загрузки изображений:', error));
 }
