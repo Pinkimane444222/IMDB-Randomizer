@@ -38,26 +38,30 @@ function fetchMovie(id) {
   const errorMessage = document.getElementById('errorMessage');
   const movieCard = document.getElementById('movieCard');
 
-  movieCard.style.display = 'none';
-  errorMessage.style.display = 'none';
+  movieCard.style.display = 'none'; // Скрыть карточку перед загрузкой
+  errorMessage.style.display = 'none'; // Скрыть сообщение об ошибке
 
   fetch(`${TMDB_BASE_URL}${id}?api_key=${API_KEY}&language=ru`)
     .then(res => res.json())
     .then(data => {
+      console.log(data); // Для отладки, чтобы увидеть данные
+
       if (data && data.title) {
         document.getElementById('movieTitle').textContent = data.title;
         document.getElementById('movieYear').textContent = new Date(data.release_date).getFullYear();
         document.getElementById('movieRating').textContent = data.vote_average.toFixed(1);
         document.getElementById('movieOverview').textContent = data.overview;
         document.getElementById('moviePoster').src = `${IMAGE_BASE_URL}${data.poster_path}`;
+        
+        // Показываем карточку фильма
         movieCard.style.display = 'flex';
       } else {
-        errorMessage.textContent = 'Ошибка при загрузке данных.';
+        errorMessage.textContent = 'Ошибка при загрузке данных. Попробуйте снова.';
         errorMessage.style.display = 'block';
       }
     })
     .catch(error => {
-      console.error(error);
+      console.error('Ошибка:', error);
       errorMessage.textContent = 'Ошибка при загрузке данных.';
       errorMessage.style.display = 'block';
     });
