@@ -12,8 +12,21 @@ const top250 = [
     680, 238, 155, 429, 510, 769, 862, 497, 240, 424
 ];
 
+// Функция, чтобы выбрать фильм без повторов
+let remainingMovies = [...top250]; // Копируем массив, чтобы не изменять оригинал
+
 document.getElementById('rollBtn').addEventListener('click', async () => {
-  const randomId = top250[Math.floor(Math.random() * top250.length)];
+  if (remainingMovies.length === 0) {
+    alert('Все фильмы были показаны!');
+    return;
+  }
+
+  const randomIndex = Math.floor(Math.random() * remainingMovies.length);
+  const randomId = remainingMovies[randomIndex];
+
+  // Удаляем фильм из массива, чтобы не показывать его повторно
+  remainingMovies.splice(randomIndex, 1);
+
   const res = await fetch(`https://api.themoviedb.org/3/movie/${randomId}?api_key=${TMDB_API_KEY}&language=ru-RU`);
   const data = await res.json();
 
