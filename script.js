@@ -48,7 +48,6 @@ function fetchMovie(id) {
       document.getElementById('movieYear').textContent = new Date(data.release_date).getFullYear();
       document.getElementById('movieRating').textContent = data.vote_average.toFixed(1);
       
-      // Укороченный синопсис
       const shortOverview = data.overview.length > 150 ? data.overview.substring(0, 150) + "..." : data.overview;
       document.getElementById('movieOverview').textContent = shortOverview;
       
@@ -61,4 +60,3 @@ function fetchMovie(id) {
       errorMessage.style.display = 'block';
     });
 }
-
