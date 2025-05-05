@@ -1,18 +1,10 @@
 body {
   font-family: Arial, sans-serif;
-  background: linear-gradient(270deg, #ff6e7f, #bfe9ff);
-  background-size: 400% 400%;
-  animation: gradientAnimation 20s ease infinite;
+  background: #111;
   color: #f0f0f0;
   margin: 0;
   padding: 20px;
   text-align: center;
-}
-
-@keyframes gradientAnimation {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
 }
 
 .container {
@@ -29,13 +21,10 @@ button {
   cursor: pointer;
   border-radius: 6px;
   margin: 20px 0;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+  background: #b00610;
 }
 
 .error {
@@ -54,7 +43,7 @@ button:hover {
 }
 
 .card img {
-  width: 200px;
+  width: 100%;
   border-radius: 10px;
   margin-bottom: 20px;
 }
@@ -64,16 +53,29 @@ button:hover {
   max-width: 700px;
 }
 
-.carousel {
-  display: flex;
-  overflow-x: auto;
-  gap: 10px;
+/* Карусель */
+.swiper-container {
+  width: 100%;
+  height: 400px;
   margin-bottom: 20px;
 }
 
-.carousel-item {
-  flex: 0 0 auto;
-  width: 150px;
-  height: auto;
+.swiper-wrapper {
+  display: flex;
+}
+
+.swiper-slide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.swiper-button-next, .swiper-button-prev {
+  color: #fff;
+}
+
+.swiper-slide img {
+  width: 80%;
   border-radius: 10px;
 }
