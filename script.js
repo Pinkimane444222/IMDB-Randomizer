@@ -66,6 +66,4 @@ function toggleTheme() {
   document.body.classList.toggle('dark-theme');
 }
 
-document.body.insertAdjacentHTML('beforeend', `
-  <button class="theme-toggle" onclick="toggleTheme()">Сменить тему</button>
 `);
