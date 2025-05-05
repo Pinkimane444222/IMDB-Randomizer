@@ -5,14 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>IMDB Randomizer</title>
   <link rel="stylesheet" href="style.css" />
+  
+  <!-- Подключаем Swiper CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/swiper/swiper-bundle.min.css"
+  />
 </head>
 <body>
   <div class="container">
-    <button id="rollButton">Сгенерировать фильм</button>
+    <h1>Случайный фильм из топ-250 IMDb</h1>
+    <button id="rollButton">Let's roll!</button>
     <div id="errorMessage" class="error"></div>
     <div id="movieCard" class="card" style="display: none;">
-      <div id="imageCarousel" class="carousel"></div>
-      <img id="moviePoster" alt="Постер фильма" />
+      <div class="swiper-container">
+        <div class="swiper-wrapper" id="imageCarousel">
+          <!-- Здесь будут располагаться изображения для карусели -->
+        </div>
+        <!-- Добавим кнопки для навигации свайпа -->
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+      </div>
       <div class="info">
         <h2 id="movieTitle"></h2>
         <p><strong>Год:</strong> <span id="movieYear"></span></p>
@@ -22,5 +35,7 @@
     </div>
   </div>
   <script src="script.js"></script>
+  <!-- Подключаем Swiper JS -->
+  <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
 </body>
 </html>
