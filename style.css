@@ -5,16 +5,17 @@ body {
   margin: 0;
   padding: 20px;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden; /* Убираем скролл */
 }
 
 .container {
   max-width: 800px;
-  margin: 0 auto;
-}
-
-h1 {
-  font-size: 24px; /* Уменьшение шрифта заголовка для мобильных */
-  margin-bottom: 20px;
+  width: 100%;
 }
 
 button {
@@ -51,7 +52,7 @@ button:hover {
 }
 
 .card img {
-  width: 200px; /* Уменьшение размера изображения */
+  width: 200px; /* Уменьшаем размер постеров */
   height: auto;
   border-radius: 10px;
   margin-bottom: 20px;
@@ -63,19 +64,11 @@ button:hover {
 }
 
 .card .info p {
-  font-size: 14px; /* Уменьшение шрифта текста */
+  font-size: 14px;
   line-height: 1.5;
 }
 
 @media (max-width: 600px) {
-  h1 {
-    font-size: 20px; /* Ещё меньше шрифт на мобильных */
-  }
-
-  .card {
-    padding: 10px;
-  }
-
   .card img {
     width: 150px; /* Ещё меньше изображения на мобильных */
   }
