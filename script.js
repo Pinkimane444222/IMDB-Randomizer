@@ -61,9 +61,3 @@ function fetchMovie(id) {
       errorMessage.style.display = 'block';
     });
 }
-
-function toggleTheme() {
-  document.body.classList.toggle('dark-theme');
-}
-
-`);
