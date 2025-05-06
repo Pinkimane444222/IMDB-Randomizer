@@ -10,7 +10,7 @@ body {
   height: 100vh;
   background: linear-gradient(45deg, #ffafcc, #c9c9ff, #ffcbaf, #f6d1b0);
   background-size: 400% 400%;
-  animation: gradientBackground 30s ease infinite; /* Увеличена длительность анимации до 30 секунд */
+  animation: gradientBackground 30s ease infinite;
 }
 
 @keyframes gradientBackground {
@@ -29,21 +29,6 @@ body {
   text-align: center;
   max-width: 800px;
   width: 100%;
-}
-
-button {
-  padding: 10px 20px;
-  font-size: 18px;
-  background: #e50914;
-  color: white;
-  border: none;
-  cursor: pointer;
-  border-radius: 6px;
-  margin: 20px 0;
-}
-
-button:hover {
-  background: #b00610;
 }
 
 .error {
