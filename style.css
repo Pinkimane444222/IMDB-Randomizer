@@ -57,9 +57,18 @@ body {
   animation: swipeLeft 0.4s forwards ease-in;
 }
 
+.card.swipe-out-right {
+  animation: swipeRight 0.4s forwards ease-in;
+}
+
 @keyframes swipeLeft {
   0% { transform: translateX(0); opacity: 1; }
   100% { transform: translateX(-100%); opacity: 0; }
+}
+
+@keyframes swipeRight {
+  0% { transform: translateX(0); opacity: 1; }
+  100% { transform: translateX(100%); opacity: 0; }
 }
 
 .movie-poster {
