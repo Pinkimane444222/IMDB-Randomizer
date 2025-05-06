@@ -1,35 +1,70 @@
 const API_KEY = '19739a5cb7feec7a597b8a968235dc9b';
-const TMDB_API_URL = 'https://api.themoviedb.org/3/movie/top_rated';
+const TMDB_BASE_URL = 'https://api.themoviedb.org/3/movie/';
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 
-document.addEventListener('click', loadRandomMovie);
-document.addEventListener('touchstart', loadRandomMovie, { passive: true });
-
+let moviePage = 1;
 let isLoading = false;
+
+function getRandomMovieId() {
+  return fetch(`https://api.themoviedb.org/3/movie/top_rated?api_key=${API_KEY}&language=ru&page=${moviePage}`)
+    .then(res => res.json())
+    .then(data => {
+      const randomIndex = Math.floor(Math.random() * data.results.length);
+      const movie = data.results[randomIndex];
+      moviePage = (moviePage % data.total_pages) + 1;
+      return movie.id;
+    });
+}
 
 function loadRandomMovie() {
   if (isLoading) return;
   isLoading = true;
 
+  const movieCard = document.getElementById('movieCard');
+  const tapToSee = document.getElementById('tapToSee');
   const errorMessage = document.getElementById('errorMessage');
-  const tapHint = document.getElementById('tapHint');
+
   errorMessage.style.display = 'none';
-  if (tapHint) tapHint.style.display = 'none';
 
-  const randomPage = Math.floor(Math.random() * 500) + 1;
+  // Если карточка уже показана, сначала анимация "ухода влево"
+  if (movieCard.style.display === 'flex') {
+    movieCard.classList.add('swipe-out-left');
 
-  fetch(`${TMDB_API_URL}?api_key=${API_KEY}&language=ru&page=${randomPage}`)
+    // Ждём завершения анимации
+    movieCard.addEventListener('animationend', () => {
+      movieCard.classList.remove('swipe-out-left');
+      movieCard.style.display = 'none';
+      fetchNewMovie();
+    }, { once: true });
+  } else {
+    tapToSee.style.display = 'none';
+    fetchNewMovie();
+  }
+}
+
+function fetchNewMovie() {
+  getRandomMovieId().then(fetchMovie);
+}
+
+function fetchMovie(id) {
+  fetch(`${TMDB_BASE_URL}${id}?api_key=${API_KEY}&language=ru`)
     .then(res => res.json())
     .then(data => {
-      const movies = data.results.filter(movie => movie.poster_path && movie.overview);
-      if (movies.length === 0) throw new Error('Нет подходящих фильмов.');
+      const movieCard = document.getElementById('movieCard');
+      document.getElementById('movieTitle').textContent = data.title;
+      document.getElementById('movieYear').textContent = new Date(data.release_date).getFullYear();
+      document.getElementById('movieRating').textContent = data.vote_average.toFixed(1);
+      document.getElementById('movieOverview').textContent = data.overview;
+      document.getElementById('movieLink').href = `https://www.themoviedb.org/movie/${id}`;
+      document.getElementById('moviePoster').src = `${IMAGE_BASE_URL}${data.poster_path}`;
 
-      const randomMovie = movies[Math.floor(Math.random() * movies.length)];
-      showMovie(randomMovie);
+      movieCard.style.display = 'flex';
+      setTimeout(() => movieCard.classList.add('fade-in'), 10);
     })
-    .catch(err => {
-      console.error(err);
-      errorMessage.textContent = 'Ошибка при загрузке фильма.';
+    .catch(error => {
+      console.error(error);
+      const errorMessage = document.getElementById('errorMessage');
+      errorMessage.textContent = 'Ошибка при загрузке данных.';
       errorMessage.style.display = 'block';
     })
     .finally(() => {
@@ -37,27 +72,30 @@ function loadRandomMovie() {
     });
 }
 
-function showMovie(movie) {
-  const movieCard = document.getElementById('movieCard');
-  const moviePoster = document.getElementById('moviePoster');
-  const movieTitle = document.getElementById('movieTitle');
-  const movieYear = document.getElementById('movieYear');
-  const movieRating = document.getElementById('movieRating');
-  const movieOverview = document.getElementById('movieOverview');
-  const movieLink = document.getElementById('movieLink');
+// Swipe-влево (только горизонтальный свайп)
+let startX = null;
+let startY = null;
 
-  movieTitle.textContent = movie.title;
-  movieYear.textContent = new Date(movie.release_date).getFullYear();
-  movieRating.textContent = movie.vote_average.toFixed(1);
-  movieOverview.textContent = movie.overview;
-  movieLink.href = `https://www.themoviedb.org/movie/${movie.id}`;
-  moviePoster.src = `${IMAGE_BASE_URL}${movie.poster_path}`;
+document.addEventListener('touchstart', (e) => {
+  if (e.touches.length === 1) {
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+  }
+}, { passive: true });
 
-  // Сброс и повтор анимации
-  movieCard.style.display = 'none';
-  void movieCard.offsetWidth; // принудительно перезапускает анимацию
-  movieCard.style.display = 'flex';
-  movieCard.classList.remove('card');
-  void movieCard.offsetWidth;
-  movieCard.classList.add('card');
-}
+document.addEventListener('touchend', (e) => {
+  if (startX === null || startY === null) return;
+
+  const endX = e.changedTouches[0].clientX;
+  const endY = e.changedTouches[0].clientY;
+
+  const deltaX = endX - startX;
+  const deltaY = endY - startY;
+
+  if (Math.abs(deltaX) > Math.abs(deltaY) && deltaX < -30) {
+    loadRandomMovie();
+  }
+
+  startX = null;
+  startY = null;
+}, { passive: true });
