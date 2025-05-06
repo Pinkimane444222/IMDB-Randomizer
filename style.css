@@ -8,27 +8,30 @@ body {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background: linear-gradient(45deg, #ffafcc, #c9c9ff, #ffcbaf, #f6d1b0);
-  background-size: 400% 400%;
-  animation: gradientBackground 30s ease infinite;
-}
-
-@keyframes gradientBackground {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+  background-color: #111; /* Заменили градиент на тёмный фон */
 }
 
 .container {
   text-align: center;
   max-width: 800px;
   width: 100%;
+  position: relative;
+}
+
+.tap-hint {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 24px;
+  color: #ccc;
+  animation: blink 1.5s infinite;
+  pointer-events: none;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
 .error {
