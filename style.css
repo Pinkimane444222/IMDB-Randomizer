@@ -1,0 +1,146 @@
+
+body {
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  background: linear-gradient(270deg, #ADD8E6, #87CEFA, #B0E0E6);
+  background-size: 400% 400%;
+  animation: gradientAnimation 10s ease infinite;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+@keyframes gradientAnimation {
+  0% {background-position: 0% 50%;}
+  50% {background-position: 100% 50%;}
+  100% {background-position: 0% 50%;}
+}
+
+.app {
+  width: 100%;
+  max-width: 480px;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.welcome {
+  text-align: center;
+}
+
+.imdb-logo-large {
+  height: 48px;
+  margin-bottom: 20px;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 15px;
+  position: sticky;
+  top: 0;
+  background: rgba(18, 18, 26, 0.7);  /* Прозрачный фон для шапки */
+  z-index: 100;
+  padding: 10px;
+}
+
+.logo {
+  font-size: 18px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.imdb-logo {
+  height: 24px;
+}
+
+.controls {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.error {
+  color: red;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.card {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.15);  /* Более прозрачная карточка */
+  border-radius: 16px;
+  padding: 16px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.card.fade-in {
+  opacity: 1;
+}
+
+.card.fade-out {
+  opacity: 0;
+}
+
+.movie-poster {
+  width: 250px;
+  height: auto;
+  aspect-ratio: 2 / 3;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  object-fit: cover;
+}
+
+.info {
+  text-align: left;
+  width: 100%;
+}
+
+h2 {
+  font-size: 22px;
+  margin: 0;
+}
+
+.meta {
+  font-size: 14px;
+  color: #ccc;
+  margin: 6px 0;
+}
+
+.read-more {
+  color: #1e90ff;
+  text-decoration: none;
+}
+
+.read-more:hover {
+  text-decoration: underline;
+}
+
+button, select {
+  flex: 1;
+  padding: 10px;
+  font-size: 14px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  background: #333;
+  color: #fff;
+}
+
+button.primary {
+  background: #1e90ff;
+}
+
+button.secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
