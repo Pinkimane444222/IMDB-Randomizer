@@ -23,6 +23,9 @@ const movieIds = [
 let remainingIds = [...movieIds];
 
 document.body.addEventListener('click', () => {
+  const tapHint = document.getElementById('tapHint');
+  if (tapHint) tapHint.style.display = 'none';
+
   if (remainingIds.length === 0) {
     alert("Фильмы закончились! Обновите страницу для начала заново.");
     return;
