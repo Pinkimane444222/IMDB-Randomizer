@@ -1,6 +1,6 @@
 /* Общие стили */
 body {
-  font-family: Arial, sans-serif;
+  font-family: 'Roboto', Arial, sans-serif; /* Используем шрифт Roboto */
   color: #f0f0f0;
   margin: 0;
   padding: 0;
@@ -47,6 +47,14 @@ body {
   border-radius: 10px;
   padding: 20px;
   margin-top: 20px;
+  opacity: 0; /* Изначально скрыта */
+  animation: fadeIn 0.5s forwards; /* Плавное появление */
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
 }
 
 .movie-poster {
