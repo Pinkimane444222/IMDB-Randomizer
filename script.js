@@ -22,7 +22,7 @@ const movieIds = [
 
 let remainingIds = [...movieIds];
 
-document.getElementById('rollButton').addEventListener('click', () => {
+document.body.addEventListener('click', () => {
   if (remainingIds.length === 0) {
     alert("Фильмы закончились! Обновите страницу для начала заново.");
     return;
@@ -56,7 +56,7 @@ function fetchMovie(id) {
       movieOverview.textContent = data.overview;
       movieLink.href = `https://www.themoviedb.org/movie/${id}`;
       moviePoster.src = `${IMAGE_BASE_URL}${data.poster_path}`;
-      movieCard.style.display = 'block'; // Показываем карточку с фильмом
+      movieCard.style.display = 'block';
     })
     .catch(error => {
       console.error(error);
