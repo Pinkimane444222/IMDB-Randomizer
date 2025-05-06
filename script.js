@@ -4,6 +4,7 @@ const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 
 let moviePage = 1;
 let isLoading = false;
+const history = [];
 
 function getRandomMovieId() {
   return fetch(`https://api.themoviedb.org/3/movie/top_rated?api_key=${API_KEY}&language=ru&page=${moviePage}`)
@@ -21,25 +22,37 @@ function loadRandomMovie() {
   isLoading = true;
 
   const movieCard = document.getElementById('movieCard');
-  const tapToSee = document.getElementById('tapToSee');
+  const swipeText = document.getElementById('swipeToSee');
   const errorMessage = document.getElementById('errorMessage');
 
   errorMessage.style.display = 'none';
 
-  // Если карточка уже показана, сначала анимация "ухода влево"
   if (movieCard.style.display === 'flex') {
     movieCard.classList.add('swipe-out-left');
-
-    // Ждём завершения анимации
     movieCard.addEventListener('animationend', () => {
       movieCard.classList.remove('swipe-out-left');
       movieCard.style.display = 'none';
       fetchNewMovie();
     }, { once: true });
   } else {
-    tapToSee.style.display = 'none';
+    swipeText.style.display = 'none';
     fetchNewMovie();
   }
+}
+
+function loadPreviousMovie() {
+  if (isLoading || history.length < 2) return;
+  isLoading = true;
+  history.pop(); // удалить текущий
+  const previousId = history.pop(); // вернуться к предыдущему
+
+  const movieCard = document.getElementById('movieCard');
+  movieCard.classList.add('swipe-out-right');
+  movieCard.addEventListener('animationend', () => {
+    movieCard.classList.remove('swipe-out-right');
+    movieCard.style.display = 'none';
+    fetchMovie(previousId);
+  }, { once: true });
 }
 
 function fetchNewMovie() {
@@ -50,6 +63,8 @@ function fetchMovie(id) {
   fetch(`${TMDB_BASE_URL}${id}?api_key=${API_KEY}&language=ru`)
     .then(res => res.json())
     .then(data => {
+      history.push(id);
+
       const movieCard = document.getElementById('movieCard');
       document.getElementById('movieTitle').textContent = data.title;
       document.getElementById('movieYear').textContent = new Date(data.release_date).getFullYear();
@@ -72,7 +87,7 @@ function fetchMovie(id) {
     });
 }
 
-// Swipe-влево (только горизонтальный свайп)
+// Swipe gestures
 let startX = null;
 let startY = null;
 
@@ -92,8 +107,12 @@ document.addEventListener('touchend', (e) => {
   const deltaX = endX - startX;
   const deltaY = endY - startY;
 
-  if (Math.abs(deltaX) > Math.abs(deltaY) && deltaX < -30) {
-    loadRandomMovie();
+  if (Math.abs(deltaX) > Math.abs(deltaY)) {
+    if (deltaX < -30) {
+      loadRandomMovie(); // swipe left
+    } else if (deltaX > 30) {
+      loadPreviousMovie(); // swipe right
+    }
   }
 
   startX = null;
