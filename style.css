@@ -283,8 +283,8 @@ main {
   bottom: 0;
   left: 0;
   right: 0;
-  background: rgba(18, 24, 38, 0.7);
-  backdrop-filter: blur(10px);
+  background: rgba(18, 24, 38, 0.9); /* Увеличена непрозрачность с 0.7 до 0.9 */
+  backdrop-filter: blur(15px); /* Усилен эффект размытия */
   padding: 24px;
   border-radius: 24px 24px 0 0;
   z-index: 100;
@@ -306,6 +306,7 @@ main {
   cursor: pointer;
   text-align: center;
   transition: all 0.2s ease;
+  font-weight: 500; /* Добавлен более жирный шрифт для лучшей читаемости */
 }
 
 .genre-item:hover {
@@ -314,8 +315,9 @@ main {
 }
 
 .genre-item.active {
-  background: rgba(52, 152, 255, 0.2);
-  border: 1px solid rgba(52, 152, 255, 0.4);
+  background: rgba(52, 152, 255, 0.3); /* Увеличена непрозрачность */
+  border: 1px solid rgba(52, 152, 255, 0.6); /* Более яркая граница */
+  box-shadow: 0 0 10px rgba(52, 152, 255, 0.2); /* Добавлено свечение */
 }
 
 button {
