@@ -1,12 +1,26 @@
 body {
   font-family: 'Inter', sans-serif;
   margin: 0;
-  background: linear-gradient(135deg, #121826, #0d111a);
+  background: linear-gradient(-45deg, #121826, #0d111a, #1a2234, #0f1522);
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
   color: #fff;
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
+}
+
+@keyframes gradientBG {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: S0% 50%;
+  }
 }
 
 .app {
@@ -64,6 +78,7 @@ header {
   display: flex;
   align-items: center;
   gap: 12px;
+  margin-left: 40px; /* Добавлено отступ, чтобы кнопка "Назад" не наезжала */
 }
 
 .imdb-logo {
@@ -83,8 +98,6 @@ main {
   padding: 0 16px 24px;
   position: relative;
 }
-
-
 
 .error {
   color: #ff3e3e;
@@ -154,22 +167,20 @@ main {
   width: 100%;
   height: auto;
   aspect-ratio: 2 / 3;
-  border-radius: 16px;
+  border-radius: 16px 16px 0 0;
   object-fit: cover;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
 }
 
-.movie-title-large {
-  position: absolute;
-  bottom: 16px;
-  left: 0;
-  right: 0;
+.movie-title {
+  width: 100%;
   text-align: center;
-  font-size: 36px;
+  font-size: 24px;
   font-weight: 700;
-  letter-spacing: 1px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
-  padding: 0 16px;
+  letter-spacing: 0.5px;
+  padding: 16px;
+  margin: 0;
+  background: rgba(18, 24, 38, 0.9);
 }
 
 .info {
@@ -275,16 +286,35 @@ select {
   cursor: pointer;
 }
 
-
+button {
+  padding: 14px 28px;
+  font-size: 16px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
 
 button.primary {
-  background: #3498ff;
+  background: linear-gradient(135deg, #3498ff, #2387f0);
   color: #fff;
   box-shadow: 0 4px 12px rgba(52, 152, 255, 0.4);
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  padding: 16px 36px;
+  font-size: 18px;
+  border-radius: 16px;
+  transform: translateY(0);
+  margin-top: 20px;
 }
 
 button.primary:hover {
-  background: #2387f0;
+  background: linear-gradient(135deg, #2387f0, #1476df);
   box-shadow: 0 6px 16px rgba(52, 152, 255, 0.6);
+  transform: translateY(-2px);
+}
+
+button.primary:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 8px rgba(52, 152, 255, 0.4);
 }
