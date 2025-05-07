@@ -1,4 +1,3 @@
-
 const API_KEY = '19739a5cb7feec7a597b8a968235dc9b';
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
@@ -7,7 +6,17 @@ let moviePage = 1;
 let isLoading = false;
 let genreMap = {};
 let selectedGenre = '';
+let favorites = [];
 const history = [];
+
+// Инициализация
+document.addEventListener('DOMContentLoaded', () => {
+  // Загрузка сохраненных избранных из localStorage
+  const savedFavorites = localStorage.getItem('imdbRandomizerFavorites');
+  if (savedFavorites) {
+    favorites = JSON.parse(savedFavorites);
+  }
+});
 
 function getGenres() {
   return fetch(`${TMDB_BASE_URL}/genre/movie/list?api_key=${API_KEY}&language=ru`)
@@ -41,32 +50,55 @@ function getRandomMovieId() {
 }
 
 function showMovie(data) {
+  // Скрываем индикатор загрузки
+  document.getElementById('loadingIndicator').style.display = 'none';
+  
   const card = document.getElementById('movieCard');
   document.getElementById('movieTitle').textContent = data.title;
+  document.getElementById('movieTitleLarge').textContent = data.title;
   document.getElementById('movieYear').textContent = new Date(data.release_date).getFullYear();
   document.getElementById('movieRating').textContent = data.vote_average.toFixed(1);
   document.getElementById('movieOverview').textContent = data.overview;
   document.getElementById('movieGenres').textContent = data.genres.map(g => g.name).join(", ");
   document.getElementById('movieLink').href = `https://www.themoviedb.org/movie/${data.id}`;
-  document.getElementById('moviePoster').src = `${IMAGE_BASE_URL}${data.poster_path}`;
+  
+  // Проверяем, есть ли постер
+  if (data.poster_path) {
+    document.getElementById('moviePoster').src = `${IMAGE_BASE_URL}${data.poster_path}`;
+  } else {
+    document.getElementById('moviePoster').src = 'https://via.placeholder.com/500x750?text=No+Poster';
+  }
 
+  // Анимация появления карточки
   card.classList.remove('fade-out');
   card.style.display = 'flex';
   void card.offsetWidth;
   card.classList.add('fade-in');
+  
+  // Обновляем состояние кнопки избранного
+  updateFavoriteButton(data.id);
 }
 
 function fetchMovie(id) {
+  // Показываем индикатор загрузки
+  document.getElementById('loadingIndicator').style.display = 'block';
+  
   fetch(`${TMDB_BASE_URL}/movie/${id}?api_key=${API_KEY}&language=ru`)
     .then(res => res.json())
     .then(data => {
       history.push(id);
       showMovie(data);
     })
-    .catch(() => {
-      const errorMessage = document.getElementById('errorMessage');
-      errorMessage.textContent = 'Ошибка при загрузке данных.';
-      errorMessage.style.display = 'block';
+    .catch(error => {
+      const errorMessage = document.createElement('div');
+      errorMessage.classList.add('error');
+      errorMessage.textContent = 'Ошибка при загрузке данных. Попробуйте еще раз.';
+      document.querySelector('main').prepend(errorMessage);
+      
+      // Убираем сообщение через 3 секунды
+      setTimeout(() => {
+        errorMessage.remove();
+      }, 3000);
     })
     .finally(() => {
       isLoading = false;
@@ -76,10 +108,16 @@ function fetchMovie(id) {
 function loadRandomMovie() {
   if (isLoading) return;
   isLoading = true;
-  document.getElementById('errorMessage').style.display = 'none';
+  
+  // Скрываем предыдущие ошибки
+  const prevErrors = document.querySelectorAll('.error');
+  prevErrors.forEach(el => el.remove());
 
   const card = document.getElementById('movieCard');
   if (card.style.display === 'flex') {
+    // Показываем индикатор загрузки
+    document.getElementById('loadingIndicator').style.display = 'block';
+    
     card.classList.remove('fade-in');
     card.classList.add('fade-out');
     setTimeout(() => {
@@ -103,31 +141,103 @@ function loadMovieWithFade(id) {
   const card = document.getElementById('movieCard');
   card.classList.remove('fade-in');
   card.classList.add('fade-out');
+  
+  // Показываем индикатор загрузки
+  document.getElementById('loadingIndicator').style.display = 'block';
+  
   setTimeout(() => {
     card.style.display = 'none';
     fetchMovie(id);
   }, 400);
 }
 
+function toggleGenreSelect() {
+  const genreContainer = document.getElementById('genreSelectContainer');
+  if (genreContainer.style.display === 'none') {
+    genreContainer.style.display = 'block';
+  } else {
+    genreContainer.style.display = 'none';
+  }
+}
+
+function toggleFavorite(movieId) {
+  const index = favorites.indexOf(movieId);
+  if (index === -1) {
+    favorites.push(movieId);
+  } else {
+    favorites.splice(index, 1);
+  }
+  
+  // Сохраняем в localStorage
+  localStorage.setItem('imdbRandomizerFavorites', JSON.stringify(favorites));
+  
+  // Обновляем вид кнопки
+  updateFavoriteButton(movieId);
+}
+
+function updateFavoriteButton(movieId) {
+  const isFavorite = favorites.includes(movieId);
+  const heartIcon = document.querySelector('.heart-icon');
+  
+  if (isFavorite) {
+    heartIcon.innerHTML = '❤️'; // Заполненное сердце
+    heartIcon.style.color = '#ff3e66';
+  } else {
+    heartIcon.innerHTML = '♡'; // Пустое сердце
+    heartIcon.style.color = '#fff';
+  }
+}
+
+// Обработчики событий
 document.getElementById('newBtn').onclick = loadRandomMovie;
-document.getElementById('backBtn').onclick = loadPreviousMovie;
-document.getElementById('genreSelect').onchange = function (e) {
+document.getElementById('genresBtn').onclick = toggleGenreSelect;
+
+document.getElementById('favoritesBtn').onclick = function() {
+  // В будущем здесь будет показ избранных фильмов
+  // Для текущей версии просто переключаем в избранное
+  const currentMovieId = history[history.length - 1];
+  if (currentMovieId) {
+    toggleFavorite(currentMovieId);
+  }
+};
+
+document.getElementById('genreSelect').onchange = function(e) {
   selectedGenre = e.target.value;
   moviePage = 1;
+  // Скрываем selector после выбора
+  document.getElementById('genreSelectContainer').style.display = 'none';
   loadRandomMovie();
 };
 
-document.getElementById('startBtn').onclick = function () {
+document.querySelector('.back-btn').onclick = function() {
+  if (history.length > 1) {
+    loadPreviousMovie();
+  } else {
+    // Если нет истории, возвращаемся на приветственный экран
+    document.getElementById('mainInterface').style.display = 'none';
+    document.getElementById('welcomeScreen').style.display = 'block';
+  }
+};
+
+document.getElementById('startBtn').onclick = function() {
   document.getElementById('welcomeScreen').style.display = 'none';
   document.getElementById('mainInterface').style.display = 'block';
   getGenres().then(loadRandomMovie);
 };
 
+// Реализация Tap to see
 document.addEventListener('click', (e) => {
-  const deltaY = Math.abs(window.scrollY - (document.lastScrollY || 0));
-  const isButton = e.target.closest('button, select');
-  if (deltaY < 10 && !isButton && document.getElementById('mainInterface').style.display === 'block') {
+  // Игнорируем клики на кнопках и внутри модалки с жанрами
+  if (e.target.closest('button') || e.target.closest('#genreSelectContainer')) return;
+  
+  // Если интерфейс показан и не происходит загрузка
+  if (document.getElementById('mainInterface').style.display === 'block') {
+    // Если открыт селектор жанров, сначала закрываем его
+    if (document.getElementById('genreSelectContainer').style.display !== 'none') {
+      document.getElementById('genreSelectContainer').style.display = 'none';
+      return;
+    }
+    
     loadRandomMovie();
   }
-  document.lastScrollY = window.scrollY;
 });
