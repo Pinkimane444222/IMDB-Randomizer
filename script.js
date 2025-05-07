@@ -39,6 +39,94 @@ function getRandomMovieId() {
     });
 }
 
+// Функция для извлечения доминирующего цвета из изображения
+function getDominantColor(imgEl) {
+  return new Promise((resolve) => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    // Обработчик загрузки изображения
+    imgEl.onload = function() {
+      // Используем уменьшенное изображение для быстрого анализа
+      canvas.width = 50;
+      canvas.height = 50;
+      
+      // Рисуем изображение на canvas
+      ctx.drawImage(imgEl, 0, 0, canvas.width, canvas.height);
+      
+      // Получаем данные пикселей
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+      
+      // Объект для подсчета частоты цветов
+      const colorMap = {};
+      
+      // Анализируем каждый пиксель
+      for (let i = 0; i < imageData.length; i += 4) {
+        const r = imageData[i];
+        const g = imageData[i + 1];
+        const b = imageData[i + 2];
+        
+        // Группируем похожие цвета, округляя значения
+        const roundedR = Math.round(r / 10) * 10;
+        const roundedG = Math.round(g / 10) * 10;
+        const roundedB = Math.round(b / 10) * 10;
+        
+        const key = `${roundedR}-${roundedG}-${roundedB}`;
+        
+        if (!colorMap[key]) {
+          colorMap[key] = {
+            count: 0,
+            r: roundedR,
+            g: roundedG,
+            b: roundedB
+          };
+        }
+        
+        colorMap[key].count++;
+      }
+      
+      // Находим наиболее часто встречающийся цвет
+      let dominantColor = null;
+      let maxCount = 0;
+      
+      for (const key in colorMap) {
+        if (colorMap[key].count > maxCount) {
+          maxCount = colorMap[key].count;
+          dominantColor = colorMap[key];
+        }
+      }
+      
+      // Делаем цвет более пастельным
+      const pastelDominantColor = createPastelColor(dominantColor.r, dominantColor.g, dominantColor.b);
+      
+      resolve(pastelDominantColor);
+    };
+  });
+}
+
+// Функция для создания пастельного варианта цвета
+function createPastelColor(r, g, b) {
+  // Смешиваем с белым для создания пастельного тона
+  const pastelFactor = 0.6; // Чем больше значение, тем более пастельный цвет
+  
+  const pastelR = Math.floor(r + (255 - r) * pastelFactor);
+  const pastelG = Math.floor(g + (255 - g) * pastelFactor);
+  const pastelB = Math.floor(b + (255 - b) * pastelFactor);
+  
+  // Возвращаем осветленный цвет и немного затемненный вариант для градиента
+  return {
+    light: `rgb(${pastelR}, ${pastelG}, ${pastelB})`,
+    dark: `rgb(${Math.max(0, pastelR - 50)}, ${Math.max(0, pastelG - 50)}, ${Math.max(0, pastelB - 50)})`
+  };
+}
+
+// Функция для установки фонового градиента
+function setGradientBackground(colorObj) {
+  document.body.style.background = `linear-gradient(-45deg, ${colorObj.dark}, ${colorObj.light}, ${colorObj.dark}, ${colorObj.light})`;
+  document.body.style.backgroundSize = "400% 400%";
+  document.body.style.animation = "gradientBG 15s ease infinite";
+}
+
 function showMovie(data) {
   const card = document.getElementById('movieCard');
   // Устанавливаем название фильма в заголовок карточки
@@ -49,11 +137,26 @@ function showMovie(data) {
   document.getElementById('movieGenres').textContent = data.genres.map(g => g.name).join(", ");
   document.getElementById('movieLink').href = `https://www.themoviedb.org/movie/${data.id}`;
   
+  // Получаем элемент изображения постера
+  const posterElement = document.getElementById('moviePoster');
+  
   // Проверяем, есть ли постер
   if (data.poster_path) {
-    document.getElementById('moviePoster').src = `${IMAGE_BASE_URL}${data.poster_path}`;
+    posterElement.src = `${IMAGE_BASE_URL}${data.poster_path}`;
+    
+    // Анализируем постер и устанавливаем градиент после загрузки
+    posterElement.onload = async function() {
+      try {
+        const dominantColor = await getDominantColor(posterElement);
+        setGradientBackground(dominantColor);
+      } catch (e) {
+        console.error('Ошибка при анализе цвета постера:', e);
+      }
+    };
   } else {
-    document.getElementById('moviePoster').src = 'https://via.placeholder.com/500x750?text=Нет+Постера';
+    posterElement.src = 'https://via.placeholder.com/500x750?text=Нет+Постера';
+    // Устанавливаем стандартный градиент в случае отсутствия постера
+    document.body.style.background = 'linear-gradient(-45deg, #121826, #0d111a, #1a2234, #0f1522)';
   }
 
   // Анимация появления карточки
