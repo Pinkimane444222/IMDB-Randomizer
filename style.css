@@ -181,15 +181,22 @@ main {
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
 }
 
+.movie-info-container {
+  width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
 .movie-title {
   width: 100%;
   text-align: left;
   font-size: 24px;
   font-weight: 700;
   letter-spacing: 0.5px;
-  padding: 16px 20px 0 20px; /* Изменен верхний и нижний отступ для выравнивания с остальным текстом */
+  padding: 16px 20px 0 20px;
   margin: 0;
   background: transparent;
+  box-sizing: border-box;
 }
 
 .info {
