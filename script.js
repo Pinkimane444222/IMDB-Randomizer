@@ -8,6 +8,122 @@ let genreMap = {};
 let selectedGenre = '';
 const history = [];
 
+// Определения цветов для конкретных фильмов по названию
+const movieTitles = {
+  'форрест гамп': {
+    color1: '#89cff0', // светло-голубой
+    color2: '#afdfe4', // пастельно-голубой
+    color3: '#99c1de', // небесно-голубой
+    color4: '#c2e6eb', // очень светло-голубой
+  },
+  'криминальное чтиво': {
+    color1: '#000000', // черный
+    color2: '#333333', // темно-серый
+    color3: '#1a1a1a', // почти черный
+    color4: '#4d4d4d', // серый
+  },
+  'зеленая миля': {
+    color1: '#006400', // темно-зеленый
+    color2: '#228b22', // зеленый
+    color3: '#1c6e44', // лесной зеленый
+    color4: '#308f65', // светло-зеленый
+  },
+  'звездные войны': {
+    color1: '#000033', // глубокий космический синий
+    color2: '#191970', // полуночный синий
+    color3: '#0b045e', // темно-синий
+    color4: '#2f3699', // синий
+  },
+  'титаник': {
+    color1: '#004d99', // глубокий синий
+    color2: '#0073e6', // морской синий
+    color3: '#1e81b0', // сине-стальной
+    color4: '#0066cc', // океанический синий
+  },
+  'матрица': {
+    color1: '#005c29', // темно-зеленый
+    color2: '#00734d', // зеленый
+    color3: '#00461c', // глубокий зеленый
+    color4: '#008080', // бирюзовый
+  },
+  'властелин колец': {
+    color1: '#654321', // коричневый
+    color2: '#8b4513', // седлово-коричневый
+    color3: '#a0522d', // охра
+    color4: '#cd853f', // светло-коричневый
+  }
+};
+
+// Базовые цветовые темы для разных жанров
+const genreColors = {
+  'комедия': {
+    color1: '#ffd700', // золотистый
+    color2: '#ffb84d', // оранжевый
+    color3: '#ffdb7d', // светло-оранжевый
+    color4: '#ffc965', // персиковый
+  },
+  'драма': {
+    color1: '#4682b4', // сталь синий
+    color2: '#6495ed', // голубой
+    color3: '#5f9ea0', // кадетский синий
+    color4: '#7ba7cc', // светло-синий
+  },
+  'мелодрама': {
+    color1: '#db7093', // розовый
+    color2: '#e6a8d7', // светло-розовый
+    color3: '#c48c9c', // пыльная роза
+    color4: '#d8a1c4', // лавандовый
+  },
+  'фантастика': {
+    color1: '#483d8b', // темно-синий
+    color2: '#9370db', // фиолетовый
+    color3: '#6a5acd', // сине-фиолетовый
+    color4: '#8a73c7', // лавандовый
+  },
+  'приключения': {
+    color1: '#228b22', // лесной зеленый
+    color2: '#3cb371', // зеленый
+    color3: '#2e8b57', // морской зеленый
+    color4: '#66cdaa', // бирюзовый
+  },
+  'боевик': {
+    color1: '#b22222', // огненно-красный
+    color2: '#cd5c5c', // индийский красный
+    color3: '#a52a2a', // коричневый
+    color4: '#dc6e6e', // светло-красный
+  },
+  'детектив': {
+    color1: '#2f4f4f', // темно-сланцевый
+    color2: '#556b2f', // оливково-зеленый
+    color3: '#5f666d', // серо-синий
+    color4: '#708090', // сланцево-серый
+  },
+  'триллер': {
+    color1: '#800000', // темно-бордовый
+    color2: '#8b0000', // темно-красный
+    color3: '#9c0e0e', // красно-коричневый
+    color4: '#990000', // алый
+  },
+  'ужасы': {
+    color1: '#1a1a1a', // почти черный
+    color2: '#4d0000', // темно-кровавый
+    color3: '#300000', // темно-бордовый
+    color4: '#2b0000', // очень темный красный
+  },
+  'мультфильм': {
+    color1: '#00ced1', // бирюзовый
+    color2: '#40e0d0', // голубой
+    color3: '#48d1cc', // аквамарин
+    color4: '#20b2aa', // светло-морской зеленый
+  },
+  'семейный': {
+    color1: '#ffa500', // оранжевый
+    color2: '#ffcf40', // светло-оранжевый
+    color3: '#ffc125', // песочный
+    color4: '#ffd700', // золотой
+  }
+};
+
 function getGenres() {
   return fetch(`${TMDB_BASE_URL}/genre/movie/list?api_key=${API_KEY}&language=ru`)
     .then(res => res.json())
@@ -39,164 +155,40 @@ function getRandomMovieId() {
     });
 }
 
-// Функция для извлечения доминирующего цвета из изображения
-function getDominantColor(imageUrl) {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.crossOrigin = "Anonymous";  // Важно для работы с внешними изображениями
-    img.src = imageUrl;
-    
-    img.onload = function() {
-      // Создаем canvas для анализа изображения
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
-      
-      // Устанавливаем размер canvas небольшим для быстрого анализа
-      canvas.width = 50;
-      canvas.height = 50;
-      
-      // Рисуем изображение на canvas
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      
-      try {
-        // Получаем пиксельные данные
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-        
-        let r = 0, g = 0, b = 0, count = 0;
-        
-        // Простой алгоритм - берем среднее значение цветов
-        // и пропускаем слишком темные и слишком светлые пиксели
-        for (let i = 0; i < imageData.length; i += 4) {
-          const red = imageData[i];
-          const green = imageData[i + 1];
-          const blue = imageData[i + 2];
-          const alpha = imageData[i + 3];
-          
-          // Пропускаем прозрачные пиксели
-          if (alpha < 128) continue;
-          
-          // Пропускаем слишком темные или слишком светлые пиксели
-          const brightness = (red + green + blue) / 3;
-          if (brightness < 20 || brightness > 230) continue;
-          
-          r += red;
-          g += green;
-          b += blue;
-          count++;
-        }
-        
-        if (count > 0) {
-          // Получаем среднее значение цветов
-          r = Math.floor(r / count);
-          g = Math.floor(g / count);
-          b = Math.floor(b / count);
-          
-          // Создаем пастельные варианты цвета для градиента
-          const pastelColors = createPastelColorGradient(r, g, b);
-          resolve(pastelColors);
-        } else {
-          // Если не удалось найти подходящие пиксели, возвращаем стандартные цвета
-          resolve({
-            color1: '#121826',
-            color2: '#0d111a',
-            color3: '#1a2234',
-            color4: '#0f1522'
-          });
-        }
-      } catch (error) {
-        console.error("Ошибка при анализе цвета:", error);
-        reject(error);
+// Функция для получения цветов по жанрам фильма
+function getGradientByGenre(genres) {
+  // Пытаемся найти первое совпадение жанра
+  for (const genre of genres) {
+    const lowerGenre = genre.toLowerCase();
+    for (const key in genreColors) {
+      if (lowerGenre.includes(key)) {
+        return genreColors[key];
       }
-    };
-    
-    img.onerror = function() {
-      console.error("Не удалось загрузить изображение для анализа");
-      reject(new Error("Ошибка загрузки изображения"));
-    };
-  });
+    }
+  }
+  
+  // Если жанров нет или нет совпадения, возвращаем стандартный градиент
+  return {
+    color1: '#121826',
+    color2: '#0d111a', 
+    color3: '#1a2234',
+    color4: '#0f1522'
+  };
 }
 
-// Создаем набор пастельных цветов для градиента на основе исходного цвета
-function createPastelColorGradient(r, g, b) {
-  // Функция для создания пастельного варианта цвета
-  function pastelize(r, g, b, factor) {
-    // Смешиваем с белым для получения пастельного тона
-    r = Math.floor(r + (255 - r) * factor);
-    g = Math.floor(g + (255 - g) * factor);
-    b = Math.floor(b + (255 - b) * factor);
-    return `rgb(${r}, ${g}, ${b})`;
-  }
+// Функция для получения цветов по названию фильма
+function getColorByMovieTitle(title) {
+  const titleLower = title.toLowerCase();
   
-  // Создаем небольшие вариации основного цвета для градиента
-  // Используя HSL для лучшего контроля вариаций
-  function rgbToHsl(r, g, b) {
-    r /= 255, g /= 255, b /= 255;
-    const max = Math.max(r, g, b), min = Math.min(r, g, b);
-    let h, s, l = (max + min) / 2;
-
-    if (max === min) {
-      h = s = 0; // оттенок серого
-    } else {
-      const d = max - min;
-      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-      switch (max) {
-        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-        case g: h = (b - r) / d + 2; break;
-        case b: h = (r - g) / d + 4; break;
-      }
-      h /= 6;
+  // Проверяем наличие точного совпадения
+  for (const key in movieTitles) {
+    if (titleLower.includes(key)) {
+      return movieTitles[key];
     }
-
-    return [h * 360, s * 100, l * 100];
   }
-
-  function hslToRgb(h, s, l) {
-    h /= 360;
-    s /= 100;
-    l /= 100;
-    let r, g, b;
-
-    if (s === 0) {
-      r = g = b = l; // оттенок серого
-    } else {
-      const hue2rgb = (p, q, t) => {
-        if (t < 0) t += 1;
-        if (t > 1) t -= 1;
-        if (t < 1/6) return p + (q - p) * 6 * t;
-        if (t < 1/2) return q;
-        if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
-        return p;
-      };
-
-      const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-      const p = 2 * l - q;
-      r = hue2rgb(p, q, h + 1/3);
-      g = hue2rgb(p, q, h);
-      b = hue2rgb(p, q, h - 1/3);
-    }
-
-    return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
-  }
-
-  // Конвертируем в HSL для модификации
-  const [h, s, l] = rgbToHsl(r, g, b);
   
-  // Создаем 4 вариации цвета для градиента
-  // Модифицируя оттенок и насыщенность
-  const rgb1 = hslToRgb(h, Math.min(s * 0.9, 60), Math.min(l * 1.2, 80));
-  const rgb2 = hslToRgb((h + 20) % 360, Math.min(s * 0.7, 50), Math.min(l * 1.3, 85));
-  const rgb3 = hslToRgb((h + 340) % 360, Math.min(s * 0.8, 55), Math.min(l * 1.1, 75));
-  const rgb4 = hslToRgb((h + 10) % 360, Math.min(s * 0.6, 45), Math.min(l * 1.25, 82));
-  
-  // Создаем пастельные версии этих цветов
-  const pastelFactor = 0.5; // Коэффициент пастельности
-  
-  return {
-    color1: pastelize(rgb1[0], rgb1[1], rgb1[2], pastelFactor),
-    color2: pastelize(rgb2[0], rgb2[1], rgb2[2], pastelFactor),
-    color3: pastelize(rgb3[0], rgb3[1], rgb3[2], pastelFactor),
-    color4: pastelize(rgb4[0], rgb4[1], rgb4[2], pastelFactor)
-  };
+  // Если нет совпадения по названию, возвращаем null
+  return null;
 }
 
 // Применяет градиент к фону страницы
@@ -223,39 +215,39 @@ function showMovie(data) {
   document.getElementById('movieYear').textContent = new Date(data.release_date).getFullYear();
   document.getElementById('movieRating').textContent = data.vote_average.toFixed(1);
   document.getElementById('movieOverview').textContent = data.overview;
-  document.getElementById('movieGenres').textContent = data.genres.map(g => g.name).join(", ");
+  
+  // Получаем жанры фильма
+  const genres = data.genres.map(g => g.name);
+  document.getElementById('movieGenres').textContent = genres.join(", ");
   document.getElementById('movieLink').href = `https://www.themoviedb.org/movie/${data.id}`;
   
-  // Обрабатываем постер и извлекаем цвет
+  // Устанавливаем постер
   if (data.poster_path) {
-    const posterUrl = `${IMAGE_BASE_URL}${data.poster_path}`;
-    document.getElementById('moviePoster').src = posterUrl;
-    
-    // Извлекаем цвет из постера и применяем его к фону
-    getDominantColor(posterUrl)
-      .then(colors => {
-        applyGradientBackground(colors);
-      })
-      .catch(error => {
-        console.error("Ошибка при обработке цвета:", error);
-        // В случае ошибки используем стандартный градиент
-        applyGradientBackground({
-          color1: '#121826',
-          color2: '#0d111a',
-          color3: '#1a2234',
-          color4: '#0f1522'
-        });
-      });
+    document.getElementById('moviePoster').src = `${IMAGE_BASE_URL}${data.poster_path}`;
   } else {
     document.getElementById('moviePoster').src = 'https://via.placeholder.com/500x750?text=Нет+Постера';
-    // Стандартный градиент для фильмов без постера
-    applyGradientBackground({
+  }
+  
+  // Сначала пробуем найти цвета по названию фильма
+  let colors = getColorByMovieTitle(data.title);
+  
+  // Если не нашли по названию, ищем по жанрам
+  if (!colors && genres.length > 0) {
+    colors = getGradientByGenre(genres);
+  }
+  
+  // Если всё равно нет цветов, используем стандартные
+  if (!colors) {
+    colors = {
       color1: '#121826',
       color2: '#0d111a',
       color3: '#1a2234',
       color4: '#0f1522'
-    });
+    };
   }
+  
+  // Применяем цвета к фону
+  applyGradientBackground(colors);
 
   // Анимация появления карточки
   card.classList.remove('fade-out');
