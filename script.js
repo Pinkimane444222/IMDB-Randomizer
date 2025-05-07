@@ -40,96 +40,185 @@ function getRandomMovieId() {
 }
 
 // Функция для извлечения доминирующего цвета из изображения
-function getDominantColor(imgEl) {
-  return new Promise((resolve) => {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
+function getDominantColor(imageUrl) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "Anonymous";  // Важно для работы с внешними изображениями
+    img.src = imageUrl;
     
-    // Обработчик загрузки изображения
-    imgEl.onload = function() {
-      // Используем уменьшенное изображение для быстрого анализа
+    img.onload = function() {
+      // Создаем canvas для анализа изображения
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      
+      // Устанавливаем размер canvas небольшим для быстрого анализа
       canvas.width = 50;
       canvas.height = 50;
       
       // Рисуем изображение на canvas
-      ctx.drawImage(imgEl, 0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
       
-      // Получаем данные пикселей
-      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-      
-      // Объект для подсчета частоты цветов
-      const colorMap = {};
-      
-      // Анализируем каждый пиксель
-      for (let i = 0; i < imageData.length; i += 4) {
-        const r = imageData[i];
-        const g = imageData[i + 1];
-        const b = imageData[i + 2];
+      try {
+        // Получаем пиксельные данные
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
         
-        // Группируем похожие цвета, округляя значения
-        const roundedR = Math.round(r / 10) * 10;
-        const roundedG = Math.round(g / 10) * 10;
-        const roundedB = Math.round(b / 10) * 10;
+        let r = 0, g = 0, b = 0, count = 0;
         
-        const key = `${roundedR}-${roundedG}-${roundedB}`;
-        
-        if (!colorMap[key]) {
-          colorMap[key] = {
-            count: 0,
-            r: roundedR,
-            g: roundedG,
-            b: roundedB
-          };
+        // Простой алгоритм - берем среднее значение цветов
+        // и пропускаем слишком темные и слишком светлые пиксели
+        for (let i = 0; i < imageData.length; i += 4) {
+          const red = imageData[i];
+          const green = imageData[i + 1];
+          const blue = imageData[i + 2];
+          const alpha = imageData[i + 3];
+          
+          // Пропускаем прозрачные пиксели
+          if (alpha < 128) continue;
+          
+          // Пропускаем слишком темные или слишком светлые пиксели
+          const brightness = (red + green + blue) / 3;
+          if (brightness < 20 || brightness > 230) continue;
+          
+          r += red;
+          g += green;
+          b += blue;
+          count++;
         }
         
-        colorMap[key].count++;
-      }
-      
-      // Находим наиболее часто встречающийся цвет
-      let dominantColor = null;
-      let maxCount = 0;
-      
-      for (const key in colorMap) {
-        if (colorMap[key].count > maxCount) {
-          maxCount = colorMap[key].count;
-          dominantColor = colorMap[key];
+        if (count > 0) {
+          // Получаем среднее значение цветов
+          r = Math.floor(r / count);
+          g = Math.floor(g / count);
+          b = Math.floor(b / count);
+          
+          // Создаем пастельные варианты цвета для градиента
+          const pastelColors = createPastelColorGradient(r, g, b);
+          resolve(pastelColors);
+        } else {
+          // Если не удалось найти подходящие пиксели, возвращаем стандартные цвета
+          resolve({
+            color1: '#121826',
+            color2: '#0d111a',
+            color3: '#1a2234',
+            color4: '#0f1522'
+          });
         }
+      } catch (error) {
+        console.error("Ошибка при анализе цвета:", error);
+        reject(error);
       }
-      
-      // Делаем цвет более пастельным
-      const pastelDominantColor = createPastelColor(dominantColor.r, dominantColor.g, dominantColor.b);
-      
-      resolve(pastelDominantColor);
+    };
+    
+    img.onerror = function() {
+      console.error("Не удалось загрузить изображение для анализа");
+      reject(new Error("Ошибка загрузки изображения"));
     };
   });
 }
 
-// Функция для создания пастельного варианта цвета
-function createPastelColor(r, g, b) {
-  // Смешиваем с белым для создания пастельного тона
-  const pastelFactor = 0.6; // Чем больше значение, тем более пастельный цвет
+// Создаем набор пастельных цветов для градиента на основе исходного цвета
+function createPastelColorGradient(r, g, b) {
+  // Функция для создания пастельного варианта цвета
+  function pastelize(r, g, b, factor) {
+    // Смешиваем с белым для получения пастельного тона
+    r = Math.floor(r + (255 - r) * factor);
+    g = Math.floor(g + (255 - g) * factor);
+    b = Math.floor(b + (255 - b) * factor);
+    return `rgb(${r}, ${g}, ${b})`;
+  }
   
-  const pastelR = Math.floor(r + (255 - r) * pastelFactor);
-  const pastelG = Math.floor(g + (255 - g) * pastelFactor);
-  const pastelB = Math.floor(b + (255 - b) * pastelFactor);
+  // Создаем небольшие вариации основного цвета для градиента
+  // Используя HSL для лучшего контроля вариаций
+  function rgbToHsl(r, g, b) {
+    r /= 255, g /= 255, b /= 255;
+    const max = Math.max(r, g, b), min = Math.min(r, g, b);
+    let h, s, l = (max + min) / 2;
+
+    if (max === min) {
+      h = s = 0; // оттенок серого
+    } else {
+      const d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      switch (max) {
+        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+        case g: h = (b - r) / d + 2; break;
+        case b: h = (r - g) / d + 4; break;
+      }
+      h /= 6;
+    }
+
+    return [h * 360, s * 100, l * 100];
+  }
+
+  function hslToRgb(h, s, l) {
+    h /= 360;
+    s /= 100;
+    l /= 100;
+    let r, g, b;
+
+    if (s === 0) {
+      r = g = b = l; // оттенок серого
+    } else {
+      const hue2rgb = (p, q, t) => {
+        if (t < 0) t += 1;
+        if (t > 1) t -= 1;
+        if (t < 1/6) return p + (q - p) * 6 * t;
+        if (t < 1/2) return q;
+        if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+        return p;
+      };
+
+      const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+      const p = 2 * l - q;
+      r = hue2rgb(p, q, h + 1/3);
+      g = hue2rgb(p, q, h);
+      b = hue2rgb(p, q, h - 1/3);
+    }
+
+    return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+  }
+
+  // Конвертируем в HSL для модификации
+  const [h, s, l] = rgbToHsl(r, g, b);
   
-  // Возвращаем осветленный цвет и немного затемненный вариант для градиента
+  // Создаем 4 вариации цвета для градиента
+  // Модифицируя оттенок и насыщенность
+  const rgb1 = hslToRgb(h, Math.min(s * 0.9, 60), Math.min(l * 1.2, 80));
+  const rgb2 = hslToRgb((h + 20) % 360, Math.min(s * 0.7, 50), Math.min(l * 1.3, 85));
+  const rgb3 = hslToRgb((h + 340) % 360, Math.min(s * 0.8, 55), Math.min(l * 1.1, 75));
+  const rgb4 = hslToRgb((h + 10) % 360, Math.min(s * 0.6, 45), Math.min(l * 1.25, 82));
+  
+  // Создаем пастельные версии этих цветов
+  const pastelFactor = 0.5; // Коэффициент пастельности
+  
   return {
-    light: `rgb(${pastelR}, ${pastelG}, ${pastelB})`,
-    dark: `rgb(${Math.max(0, pastelR - 50)}, ${Math.max(0, pastelG - 50)}, ${Math.max(0, pastelB - 50)})`
+    color1: pastelize(rgb1[0], rgb1[1], rgb1[2], pastelFactor),
+    color2: pastelize(rgb2[0], rgb2[1], rgb2[2], pastelFactor),
+    color3: pastelize(rgb3[0], rgb3[1], rgb3[2], pastelFactor),
+    color4: pastelize(rgb4[0], rgb4[1], rgb4[2], pastelFactor)
   };
 }
 
-// Функция для установки фонового градиента
-function setGradientBackground(colorObj) {
-  document.body.style.background = `linear-gradient(-45deg, ${colorObj.dark}, ${colorObj.light}, ${colorObj.dark}, ${colorObj.light})`;
+// Применяет градиент к фону страницы
+function applyGradientBackground(colors) {
+  const gradient = `linear-gradient(-45deg, ${colors.color1}, ${colors.color2}, ${colors.color3}, ${colors.color4})`;
+  document.body.style.background = gradient;
   document.body.style.backgroundSize = "400% 400%";
+  
+  // Сбрасываем анимацию для перезапуска
+  document.body.style.animation = 'none';
+  // Форсируем перерисовку
+  void document.body.offsetWidth;
+  // Перезапускаем анимацию
   document.body.style.animation = "gradientBG 15s ease infinite";
+  
+  console.log("Применен новый градиент:", gradient);
 }
 
 function showMovie(data) {
   const card = document.getElementById('movieCard');
-  // Устанавливаем название фильма в заголовок карточки
+  
+  // Устанавливаем данные фильма
   document.getElementById('movieTitle').textContent = data.title;
   document.getElementById('movieYear').textContent = new Date(data.release_date).getFullYear();
   document.getElementById('movieRating').textContent = data.vote_average.toFixed(1);
@@ -137,26 +226,35 @@ function showMovie(data) {
   document.getElementById('movieGenres').textContent = data.genres.map(g => g.name).join(", ");
   document.getElementById('movieLink').href = `https://www.themoviedb.org/movie/${data.id}`;
   
-  // Получаем элемент изображения постера
-  const posterElement = document.getElementById('moviePoster');
-  
-  // Проверяем, есть ли постер
+  // Обрабатываем постер и извлекаем цвет
   if (data.poster_path) {
-    posterElement.src = `${IMAGE_BASE_URL}${data.poster_path}`;
+    const posterUrl = `${IMAGE_BASE_URL}${data.poster_path}`;
+    document.getElementById('moviePoster').src = posterUrl;
     
-    // Анализируем постер и устанавливаем градиент после загрузки
-    posterElement.onload = async function() {
-      try {
-        const dominantColor = await getDominantColor(posterElement);
-        setGradientBackground(dominantColor);
-      } catch (e) {
-        console.error('Ошибка при анализе цвета постера:', e);
-      }
-    };
+    // Извлекаем цвет из постера и применяем его к фону
+    getDominantColor(posterUrl)
+      .then(colors => {
+        applyGradientBackground(colors);
+      })
+      .catch(error => {
+        console.error("Ошибка при обработке цвета:", error);
+        // В случае ошибки используем стандартный градиент
+        applyGradientBackground({
+          color1: '#121826',
+          color2: '#0d111a',
+          color3: '#1a2234',
+          color4: '#0f1522'
+        });
+      });
   } else {
-    posterElement.src = 'https://via.placeholder.com/500x750?text=Нет+Постера';
-    // Устанавливаем стандартный градиент в случае отсутствия постера
-    document.body.style.background = 'linear-gradient(-45deg, #121826, #0d111a, #1a2234, #0f1522)';
+    document.getElementById('moviePoster').src = 'https://via.placeholder.com/500x750?text=Нет+Постера';
+    // Стандартный градиент для фильмов без постера
+    applyGradientBackground({
+      color1: '#121826',
+      color2: '#0d111a',
+      color3: '#1a2234',
+      color4: '#0f1522'
+    });
   }
 
   // Анимация появления карточки
