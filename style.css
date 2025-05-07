@@ -1,7 +1,7 @@
 body {
   font-family: 'Inter', sans-serif;
   margin: 0;
-  background: linear-gradient(-45deg, #121826, #0d111a, #1a2234, #0f1522);
+  background: linear-gradient(-45deg, #121826, #1a2240, #0e1428, #202a4c);
   background-size: 400% 400%;
   animation: gradientBG 15s ease infinite;
   color: #fff;
@@ -10,7 +10,6 @@ body {
   align-items: center;
   min-height: 100vh;
   line-height: 1.6;
-  transition: background 1s ease;
 }
 
 @keyframes gradientBG {
@@ -33,14 +32,14 @@ body {
   overflow: hidden;
   border-radius: 40px;
   box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
-  background: rgba(18, 24, 38, 0.2); /* Уменьшена непрозрачность для лучшего эффекта */
+  background: rgba(18, 24, 38, 0.2);
   backdrop-filter: blur(10px);
 }
 
 .welcome {
   text-align: center;
   padding: 40px 24px;
-  background: rgba(18, 24, 38, 0.4); /* Уменьшена непрозрачность */
+  background: rgba(18, 24, 38, 0.4);
   backdrop-filter: blur(5px);
 }
 
@@ -63,7 +62,7 @@ header {
   justify-content: center;
   padding: 24px 16px;
   position: relative;
-  background: rgba(18, 24, 38, 0.4); /* Уменьшена непрозрачность */
+  background: rgba(18, 24, 38, 0.4);
   backdrop-filter: blur(5px);
 }
 
@@ -148,31 +147,6 @@ main {
   display: none;
 }
 
-.loading-circle-path {
-  fill: none;
-  stroke: #3498ff;
-  stroke-width: 8;
-  stroke-linecap: round;
-  stroke-dasharray: 251;
-  stroke-dashoffset: 62;
-  transform-origin: center;
-  animation: loading 1.5s linear infinite;
-}
-
-@keyframes loading {
-  0% {
-    transform: rotate(0deg);
-    stroke-dashoffset: 62;
-  }
-  50% {
-    stroke-dashoffset: 0;
-  }
-  100% {
-    transform: rotate(360deg);
-    stroke-dashoffset: 62;
-  }
-}
-
 .movie-poster {
   width: 100%;
   height: auto;
@@ -228,6 +202,24 @@ main {
   border-radius: 12px;
 }
 
+.overview-short, .overview-full {
+  margin: 12px 0;
+}
+
+.read-more-toggle {
+  color: #3498ff;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 16px;
+  display: inline-block;
+  margin-bottom: 16px;
+  cursor: pointer;
+}
+
+.read-more-toggle:hover {
+  text-decoration: underline;
+}
+
 .read-more {
   color: #3498ff;
   text-decoration: none;
@@ -235,6 +227,10 @@ main {
   font-size: 18px;
   display: inline-block;
   margin-top: 16px;
+}
+
+.read-more:hover {
+  text-decoration: underline;
 }
 
 .bottom-controls {
@@ -257,6 +253,16 @@ main {
   align-items: center;
   justify-content: center;
   gap: 10px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.control-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-2px);
+}
+
+.control-btn:active {
+  transform: translateY(1px);
 }
 
 .filter-icon {
