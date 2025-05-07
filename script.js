@@ -40,9 +40,6 @@ function getRandomMovieId() {
 }
 
 function showMovie(data) {
-  // Скрываем индикатор загрузки
-  document.getElementById('loadingIndicator').style.display = 'none';
-  
   const card = document.getElementById('movieCard');
   // Устанавливаем название фильма в заголовок карточки
   document.getElementById('movieTitle').textContent = data.title;
@@ -67,9 +64,6 @@ function showMovie(data) {
 }
 
 function fetchMovie(id) {
-  // Показываем индикатор загрузки
-  document.getElementById('loadingIndicator').style.display = 'block';
-  
   fetch(`${TMDB_BASE_URL}/movie/${id}?api_key=${API_KEY}&language=ru`)
     .then(res => res.json())
     .then(data => {
@@ -102,9 +96,6 @@ function loadRandomMovie() {
 
   const card = document.getElementById('movieCard');
   if (card.style.display === 'flex') {
-    // Показываем индикатор загрузки
-    document.getElementById('loadingIndicator').style.display = 'block';
-    
     card.classList.remove('fade-in');
     card.classList.add('fade-out');
     setTimeout(() => {
@@ -128,9 +119,6 @@ function loadMovieWithFade(id) {
   const card = document.getElementById('movieCard');
   card.classList.remove('fade-in');
   card.classList.add('fade-out');
-  
-  // Показываем индикатор загрузки
-  document.getElementById('loadingIndicator').style.display = 'block';
   
   setTimeout(() => {
     card.style.display = 'none';
