@@ -220,19 +220,6 @@ main {
   text-decoration: underline;
 }
 
-.read-more {
-  color: #3498ff;
-  text-decoration: none;
-  font-weight: 500;
-  font-size: 18px;
-  display: inline-block;
-  margin-top: 16px;
-}
-
-.read-more:hover {
-  text-decoration: underline;
-}
-
 .bottom-controls {
   display: flex;
   gap: 12px;
@@ -302,18 +289,33 @@ main {
   border-radius: 24px 24px 0 0;
   z-index: 100;
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
+  max-height: 70vh;
+  overflow-y: auto;
 }
 
-select {
-  width: 100%;
-  padding: 14px;
-  font-size: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
+.genre-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.genre-item {
   background: rgba(255, 255, 255, 0.1);
-  color: #fff;
-  appearance: none;
+  border-radius: 12px;
+  padding: 12px;
   cursor: pointer;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.genre-item:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+.genre-item.active {
+  background: rgba(52, 152, 255, 0.2);
+  border: 1px solid rgba(52, 152, 255, 0.4);
 }
 
 button {
