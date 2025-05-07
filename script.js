@@ -45,7 +45,7 @@ function showMovie(data) {
   
   const card = document.getElementById('movieCard');
   // Устанавливаем название фильма в заголовок карточки
-  document.getElementById('movieTitleLarge').textContent = data.title;
+  document.getElementById('movieTitle').textContent = data.title;
   document.getElementById('movieYear').textContent = new Date(data.release_date).getFullYear();
   document.getElementById('movieRating').textContent = data.vote_average.toFixed(1);
   document.getElementById('movieOverview').textContent = data.overview;
