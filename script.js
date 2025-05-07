@@ -6,17 +6,7 @@ let moviePage = 1;
 let isLoading = false;
 let genreMap = {};
 let selectedGenre = '';
-let favorites = [];
 const history = [];
-
-// Инициализация
-document.addEventListener('DOMContentLoaded', () => {
-  // Загрузка сохраненных избранных из localStorage
-  const savedFavorites = localStorage.getItem('imdbRandomizerFavorites');
-  if (savedFavorites) {
-    favorites = JSON.parse(savedFavorites);
-  }
-});
 
 function getGenres() {
   return fetch(`${TMDB_BASE_URL}/genre/movie/list?api_key=${API_KEY}&language=ru`)
@@ -54,7 +44,7 @@ function showMovie(data) {
   document.getElementById('loadingIndicator').style.display = 'none';
   
   const card = document.getElementById('movieCard');
-  document.getElementById('movieTitle').textContent = data.title;
+  // Устанавливаем название фильма в заголовок карточки
   document.getElementById('movieTitleLarge').textContent = data.title;
   document.getElementById('movieYear').textContent = new Date(data.release_date).getFullYear();
   document.getElementById('movieRating').textContent = data.vote_average.toFixed(1);
@@ -66,7 +56,7 @@ function showMovie(data) {
   if (data.poster_path) {
     document.getElementById('moviePoster').src = `${IMAGE_BASE_URL}${data.poster_path}`;
   } else {
-    document.getElementById('moviePoster').src = 'https://via.placeholder.com/500x750?text=No+Poster';
+    document.getElementById('moviePoster').src = 'https://via.placeholder.com/500x750?text=Нет+Постера';
   }
 
   // Анимация появления карточки
@@ -74,9 +64,6 @@ function showMovie(data) {
   card.style.display = 'flex';
   void card.offsetWidth;
   card.classList.add('fade-in');
-  
-  // Обновляем состояние кнопки избранного
-  updateFavoriteButton(data.id);
 }
 
 function fetchMovie(id) {
@@ -160,46 +147,9 @@ function toggleGenreSelect() {
   }
 }
 
-function toggleFavorite(movieId) {
-  const index = favorites.indexOf(movieId);
-  if (index === -1) {
-    favorites.push(movieId);
-  } else {
-    favorites.splice(index, 1);
-  }
-  
-  // Сохраняем в localStorage
-  localStorage.setItem('imdbRandomizerFavorites', JSON.stringify(favorites));
-  
-  // Обновляем вид кнопки
-  updateFavoriteButton(movieId);
-}
-
-function updateFavoriteButton(movieId) {
-  const isFavorite = favorites.includes(movieId);
-  const heartIcon = document.querySelector('.heart-icon');
-  
-  if (isFavorite) {
-    heartIcon.innerHTML = '❤️'; // Заполненное сердце
-    heartIcon.style.color = '#ff3e66';
-  } else {
-    heartIcon.innerHTML = '♡'; // Пустое сердце
-    heartIcon.style.color = '#fff';
-  }
-}
-
 // Обработчики событий
 document.getElementById('newBtn').onclick = loadRandomMovie;
 document.getElementById('genresBtn').onclick = toggleGenreSelect;
-
-document.getElementById('favoritesBtn').onclick = function() {
-  // В будущем здесь будет показ избранных фильмов
-  // Для текущей версии просто переключаем в избранное
-  const currentMovieId = history[history.length - 1];
-  if (currentMovieId) {
-    toggleFavorite(currentMovieId);
-  }
-};
 
 document.getElementById('genreSelect').onchange = function(e) {
   selectedGenre = e.target.value;
@@ -225,7 +175,7 @@ document.getElementById('startBtn').onclick = function() {
   getGenres().then(loadRandomMovie);
 };
 
-// Реализация Tap to see
+// Реализация клика по экрану для получения нового фильма
 document.addEventListener('click', (e) => {
   // Игнорируем клики на кнопках и внутри модалки с жанрами
   if (e.target.closest('button') || e.target.closest('#genreSelectContainer')) return;
