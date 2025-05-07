@@ -7,122 +7,7 @@ let isLoading = false;
 let genreMap = {};
 let selectedGenre = '';
 const history = [];
-
-// Определения цветов для конкретных фильмов по названию
-const movieTitles = {
-  'форрест гамп': {
-    color1: '#89cff0', // светло-голубой
-    color2: '#afdfe4', // пастельно-голубой
-    color3: '#99c1de', // небесно-голубой
-    color4: '#c2e6eb', // очень светло-голубой
-  },
-  'криминальное чтиво': {
-    color1: '#000000', // черный
-    color2: '#333333', // темно-серый
-    color3: '#1a1a1a', // почти черный
-    color4: '#4d4d4d', // серый
-  },
-  'зеленая миля': {
-    color1: '#006400', // темно-зеленый
-    color2: '#228b22', // зеленый
-    color3: '#1c6e44', // лесной зеленый
-    color4: '#308f65', // светло-зеленый
-  },
-  'звездные войны': {
-    color1: '#000033', // глубокий космический синий
-    color2: '#191970', // полуночный синий
-    color3: '#0b045e', // темно-синий
-    color4: '#2f3699', // синий
-  },
-  'титаник': {
-    color1: '#004d99', // глубокий синий
-    color2: '#0073e6', // морской синий
-    color3: '#1e81b0', // сине-стальной
-    color4: '#0066cc', // океанический синий
-  },
-  'матрица': {
-    color1: '#005c29', // темно-зеленый
-    color2: '#00734d', // зеленый
-    color3: '#00461c', // глубокий зеленый
-    color4: '#008080', // бирюзовый
-  },
-  'властелин колец': {
-    color1: '#654321', // коричневый
-    color2: '#8b4513', // седлово-коричневый
-    color3: '#a0522d', // охра
-    color4: '#cd853f', // светло-коричневый
-  }
-};
-
-// Базовые цветовые темы для разных жанров
-const genreColors = {
-  'комедия': {
-    color1: '#ffd700', // золотистый
-    color2: '#ffb84d', // оранжевый
-    color3: '#ffdb7d', // светло-оранжевый
-    color4: '#ffc965', // персиковый
-  },
-  'драма': {
-    color1: '#4682b4', // сталь синий
-    color2: '#6495ed', // голубой
-    color3: '#5f9ea0', // кадетский синий
-    color4: '#7ba7cc', // светло-синий
-  },
-  'мелодрама': {
-    color1: '#db7093', // розовый
-    color2: '#e6a8d7', // светло-розовый
-    color3: '#c48c9c', // пыльная роза
-    color4: '#d8a1c4', // лавандовый
-  },
-  'фантастика': {
-    color1: '#483d8b', // темно-синий
-    color2: '#9370db', // фиолетовый
-    color3: '#6a5acd', // сине-фиолетовый
-    color4: '#8a73c7', // лавандовый
-  },
-  'приключения': {
-    color1: '#228b22', // лесной зеленый
-    color2: '#3cb371', // зеленый
-    color3: '#2e8b57', // морской зеленый
-    color4: '#66cdaa', // бирюзовый
-  },
-  'боевик': {
-    color1: '#b22222', // огненно-красный
-    color2: '#cd5c5c', // индийский красный
-    color3: '#a52a2a', // коричневый
-    color4: '#dc6e6e', // светло-красный
-  },
-  'детектив': {
-    color1: '#2f4f4f', // темно-сланцевый
-    color2: '#556b2f', // оливково-зеленый
-    color3: '#5f666d', // серо-синий
-    color4: '#708090', // сланцево-серый
-  },
-  'триллер': {
-    color1: '#800000', // темно-бордовый
-    color2: '#8b0000', // темно-красный
-    color3: '#9c0e0e', // красно-коричневый
-    color4: '#990000', // алый
-  },
-  'ужасы': {
-    color1: '#1a1a1a', // почти черный
-    color2: '#4d0000', // темно-кровавый
-    color3: '#300000', // темно-бордовый
-    color4: '#2b0000', // очень темный красный
-  },
-  'мультфильм': {
-    color1: '#00ced1', // бирюзовый
-    color2: '#40e0d0', // голубой
-    color3: '#48d1cc', // аквамарин
-    color4: '#20b2aa', // светло-морской зеленый
-  },
-  'семейный': {
-    color1: '#ffa500', // оранжевый
-    color2: '#ffcf40', // светло-оранжевый
-    color3: '#ffc125', // песочный
-    color4: '#ffd700', // золотой
-  }
-};
+let currentMovieLink = '';
 
 function getGenres() {
   return fetch(`${TMDB_BASE_URL}/genre/movie/list?api_key=${API_KEY}&language=ru`)
@@ -155,56 +40,16 @@ function getRandomMovieId() {
     });
 }
 
-// Функция для получения цветов по жанрам фильма
-function getGradientByGenre(genres) {
-  // Пытаемся найти первое совпадение жанра
-  for (const genre of genres) {
-    const lowerGenre = genre.toLowerCase();
-    for (const key in genreColors) {
-      if (lowerGenre.includes(key)) {
-        return genreColors[key];
-      }
-    }
-  }
+// Функция для сокращения описания до определенного количества символов
+function truncateText(text, maxLength) {
+  if (!text) return '';
+  if (text.length <= maxLength) return text;
   
-  // Если жанров нет или нет совпадения, возвращаем стандартный градиент
-  return {
-    color1: '#121826',
-    color2: '#0d111a', 
-    color3: '#1a2234',
-    color4: '#0f1522'
-  };
-}
-
-// Функция для получения цветов по названию фильма
-function getColorByMovieTitle(title) {
-  const titleLower = title.toLowerCase();
+  // Находим последний пробел перед лимитом, чтобы не обрезать слова
+  let lastSpace = text.lastIndexOf(' ', maxLength);
+  if (lastSpace === -1) lastSpace = maxLength;
   
-  // Проверяем наличие точного совпадения
-  for (const key in movieTitles) {
-    if (titleLower.includes(key)) {
-      return movieTitles[key];
-    }
-  }
-  
-  // Если нет совпадения по названию, возвращаем null
-  return null;
-}
-
-// Применяет градиент к фону страницы
-function applyGradientBackground(colors) {
-  const gradient = `linear-gradient(-45deg, ${colors.color1}, ${colors.color2}, ${colors.color3}, ${colors.color4})`;
-  document.body.style.background = gradient;
-  document.body.style.backgroundSize = "400% 400%";
-  
-  // Сбрасываем анимацию для перезапуска
-  document.body.style.animation = 'none';
-  // Форсируем перерисовку
-  void document.body.offsetWidth;
-  // Перезапускаем анимацию
-  document.body.style.animation = "gradientBG 15s ease infinite";
-  
-  console.log("Применен новый градиент:", gradient);
+  return text.substring(0, lastSpace) + '...';
 }
 
 function showMovie(data) {
@@ -214,12 +59,32 @@ function showMovie(data) {
   document.getElementById('movieTitle').textContent = data.title;
   document.getElementById('movieYear').textContent = new Date(data.release_date).getFullYear();
   document.getElementById('movieRating').textContent = data.vote_average.toFixed(1);
-  document.getElementById('movieOverview').textContent = data.overview;
+  
+  // Обрабатываем описание фильма
+  const overview = data.overview || 'Описание отсутствует';
+  const shortOverview = truncateText(overview, 150);
+  
+  // Устанавливаем короткое и полное описание
+  document.getElementById('movieOverview').textContent = shortOverview;
+  document.getElementById('movieOverviewFull').textContent = overview;
+  
+  // Показываем/скрываем кнопку "Показать больше" в зависимости от длины текста
+  const readMoreToggle = document.getElementById('readMore');
+  if (overview.length <= 150) {
+    readMoreToggle.style.display = 'none';
+  } else {
+    readMoreToggle.style.display = 'inline-block';
+    readMoreToggle.textContent = 'Показать больше';
+    document.getElementById('movieOverviewFull').style.display = 'none';
+  }
   
   // Получаем жанры фильма
   const genres = data.genres.map(g => g.name);
   document.getElementById('movieGenres').textContent = genres.join(", ");
-  document.getElementById('movieLink').href = `https://www.themoviedb.org/movie/${data.id}`;
+  
+  // Сохраняем ссылку на фильм
+  currentMovieLink = `https://www.themoviedb.org/movie/${data.id}`;
+  document.getElementById('movieLink').href = currentMovieLink;
   
   // Устанавливаем постер
   if (data.poster_path) {
@@ -227,27 +92,6 @@ function showMovie(data) {
   } else {
     document.getElementById('moviePoster').src = 'https://via.placeholder.com/500x750?text=Нет+Постера';
   }
-  
-  // Сначала пробуем найти цвета по названию фильма
-  let colors = getColorByMovieTitle(data.title);
-  
-  // Если не нашли по названию, ищем по жанрам
-  if (!colors && genres.length > 0) {
-    colors = getGradientByGenre(genres);
-  }
-  
-  // Если всё равно нет цветов, используем стандартные
-  if (!colors) {
-    colors = {
-      color1: '#121826',
-      color2: '#0d111a',
-      color3: '#1a2234',
-      color4: '#0f1522'
-    };
-  }
-  
-  // Применяем цвета к фону
-  applyGradientBackground(colors);
 
   // Анимация появления карточки
   card.classList.remove('fade-out');
@@ -328,9 +172,36 @@ function toggleGenreSelect() {
   }
 }
 
+// Функция для переключения между коротким и полным описанием
+function toggleOverview() {
+  const shortOverview = document.getElementById('movieOverview');
+  const fullOverview = document.getElementById('movieOverviewFull');
+  const readMoreToggle = document.getElementById('readMore');
+  
+  if (fullOverview.style.display === 'none') {
+    // Показываем полное описание
+    shortOverview.style.display = 'none';
+    fullOverview.style.display = 'block';
+    readMoreToggle.textContent = 'Скрыть';
+  } else {
+    // Показываем короткое описание
+    shortOverview.style.display = 'block';
+    fullOverview.style.display = 'none';
+    readMoreToggle.textContent = 'Показать больше';
+  }
+}
+
+// Функция для открытия ссылки на фильм
+function openMovieLink() {
+  if (currentMovieLink) {
+    window.open(currentMovieLink, '_blank');
+  }
+}
+
 // Обработчики событий
-document.getElementById('newBtn').onclick = loadRandomMovie;
+document.getElementById('openLinkBtn').onclick = openMovieLink;
 document.getElementById('genresBtn').onclick = toggleGenreSelect;
+document.getElementById('readMore').onclick = toggleOverview;
 
 document.getElementById('genreSelect').onchange = function(e) {
   selectedGenre = e.target.value;
@@ -359,7 +230,8 @@ document.getElementById('startBtn').onclick = function() {
 // Реализация клика по экрану для получения нового фильма
 document.addEventListener('click', (e) => {
   // Игнорируем клики на кнопках и внутри модалки с жанрами
-  if (e.target.closest('button') || e.target.closest('#genreSelectContainer')) return;
+  if (e.target.closest('button') || e.target.closest('#genreSelectContainer') || 
+      e.target.closest('.read-more-toggle') || e.target.closest('.read-more')) return;
   
   // Если интерфейс показан и не происходит загрузка
   if (document.getElementById('mainInterface').style.display === 'block') {
