@@ -42,7 +42,6 @@
               <p id="movieOverview" class="overview-short"></p>
               <p id="movieOverviewFull" class="overview-full" style="display: none;"></p>
               <span id="readMore" class="read-more-toggle">Показать больше</span>
-              <a id="movieLink" href="" target="_blank" class="read-more">Подробнее</a>
             </div>
           </div>
         </div>
@@ -61,10 +60,11 @@
           </button>
         </div>
         
-        <div id="genreSelectContainer" class="genre-modal" style="display: none;">
-          <select id="genreSelect">
-            <option value="">Все жанры</option>
-          </select>
+        <div id="genreListContainer" class="genre-modal" style="display: none;">
+          <div class="genre-list">
+            <div class="genre-item active" data-genre="">Все жанры</div>
+            <!-- Жанры будут добавлены динамически через JavaScript -->
+          </div>
         </div>
       </main>
     </div>
