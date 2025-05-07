@@ -13,15 +13,53 @@ function getGenres() {
   return fetch(`${TMDB_BASE_URL}/genre/movie/list?api_key=${API_KEY}&language=ru`)
     .then(res => res.json())
     .then(data => {
-      const select = document.getElementById('genreSelect');
+      // Создаем элементы для каждого жанра
+      const genreList = document.querySelector('.genre-list');
+      
+      // Сортируем жанры по алфавиту
+      data.genres.sort((a, b) => a.name.localeCompare(b.name));
+      
+      // Сохраняем жанры в map для быстрого доступа
       data.genres.forEach(g => {
         genreMap[g.id] = g.name;
-        const option = document.createElement('option');
-        option.value = g.id;
-        option.textContent = g.name;
-        select.appendChild(option);
+        
+        // Создаем элемент для жанра
+        const genreElement = document.createElement('div');
+        genreElement.classList.add('genre-item');
+        genreElement.setAttribute('data-genre', g.id);
+        genreElement.textContent = g.name;
+        
+        // Добавляем обработчик клика
+        genreElement.addEventListener('click', function() {
+          selectGenre(g.id);
+        });
+        
+        genreList.appendChild(genreElement);
       });
     });
+}
+
+// Выбор жанра и обновление UI
+function selectGenre(genreId) {
+  // Обновляем выбранный жанр
+  selectedGenre = genreId;
+  
+  // Обновляем UI - меняем активный класс
+  const genreItems = document.querySelectorAll('.genre-item');
+  genreItems.forEach(item => {
+    if (item.getAttribute('data-genre') === genreId.toString()) {
+      item.classList.add('active');
+    } else {
+      item.classList.remove('active');
+    }
+  });
+  
+  // Скрываем модальное окно с жанрами
+  document.getElementById('genreListContainer').style.display = 'none';
+  
+  // Сбрасываем страницу и загружаем новый фильм
+  moviePage = 1;
+  loadRandomMovie();
 }
 
 function getRandomMovieId() {
@@ -84,7 +122,6 @@ function showMovie(data) {
   
   // Сохраняем ссылку на фильм
   currentMovieLink = `https://www.themoviedb.org/movie/${data.id}`;
-  document.getElementById('movieLink').href = currentMovieLink;
   
   // Устанавливаем постер
   if (data.poster_path) {
@@ -163,8 +200,8 @@ function loadMovieWithFade(id) {
   }, 400);
 }
 
-function toggleGenreSelect() {
-  const genreContainer = document.getElementById('genreSelectContainer');
+function toggleGenreList() {
+  const genreContainer = document.getElementById('genreListContainer');
   if (genreContainer.style.display === 'none') {
     genreContainer.style.display = 'block';
   } else {
@@ -198,18 +235,18 @@ function openMovieLink() {
   }
 }
 
+// Инициализируем активный жанр "Все жанры" при загрузке
+function initGenres() {
+  const allGenresItem = document.querySelector('.genre-item[data-genre=""]');
+  if (allGenresItem) {
+    allGenresItem.classList.add('active');
+  }
+}
+
 // Обработчики событий
 document.getElementById('openLinkBtn').onclick = openMovieLink;
-document.getElementById('genresBtn').onclick = toggleGenreSelect;
+document.getElementById('genresBtn').onclick = toggleGenreList;
 document.getElementById('readMore').onclick = toggleOverview;
-
-document.getElementById('genreSelect').onchange = function(e) {
-  selectedGenre = e.target.value;
-  moviePage = 1;
-  // Скрываем selector после выбора
-  document.getElementById('genreSelectContainer').style.display = 'none';
-  loadRandomMovie();
-};
 
 document.querySelector('.back-btn').onclick = function() {
   if (history.length > 1) {
@@ -224,23 +261,31 @@ document.querySelector('.back-btn').onclick = function() {
 document.getElementById('startBtn').onclick = function() {
   document.getElementById('welcomeScreen').style.display = 'none';
   document.getElementById('mainInterface').style.display = 'block';
-  getGenres().then(loadRandomMovie);
+  getGenres().then(() => {
+    initGenres();
+    loadRandomMovie();
+  });
 };
 
 // Реализация клика по экрану для получения нового фильма
 document.addEventListener('click', (e) => {
   // Игнорируем клики на кнопках и внутри модалки с жанрами
-  if (e.target.closest('button') || e.target.closest('#genreSelectContainer') || 
-      e.target.closest('.read-more-toggle') || e.target.closest('.read-more')) return;
+  if (e.target.closest('button') || e.target.closest('#genreListContainer') || 
+      e.target.closest('.read-more-toggle')) return;
   
   // Если интерфейс показан и не происходит загрузка
   if (document.getElementById('mainInterface').style.display === 'block') {
     // Если открыт селектор жанров, сначала закрываем его
-    if (document.getElementById('genreSelectContainer').style.display !== 'none') {
-      document.getElementById('genreSelectContainer').style.display = 'none';
+    if (document.getElementById('genreListContainer').style.display !== 'none') {
+      document.getElementById('genreListContainer').style.display = 'none';
       return;
     }
     
     loadRandomMovie();
   }
+});
+
+// Установка активного жанра при клике на жанр в списке "Все жанры"
+document.querySelector('.genre-item[data-genre=""]').addEventListener('click', function() {
+  selectGenre('');
 });
